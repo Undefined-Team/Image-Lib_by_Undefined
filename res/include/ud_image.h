@@ -8,7 +8,7 @@
 
 // Structures
 
-void	ud_pdc_parse_image(char *s);
+void	ud_img_parse_image(char *s);
 // Prototypes
 
 #endif

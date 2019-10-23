@@ -2,6 +2,6 @@
 
 int main(void)
 {
-	ud_pdc_parse_image("hallo\n");
-    return 0;
+	ud_img_parse_image("./image_test/adobe.jpg");
+	return 0;
 }
