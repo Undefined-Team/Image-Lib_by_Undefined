@@ -1,7 +1,9 @@
-#include <ud_image.h>
+#include "ud_image.h"
 
-int main(void)
+int main(int ac, char **av)
 {
-	ud_img_parse_image("./image_test/adobe.jpg");
+	if (ac)
+		;
+	ud_img_parse_image(av[1]);
 	return 0;
 }
