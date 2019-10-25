@@ -22,7 +22,7 @@
 # define UD_IMG_JPG_COM			0xfe		// Commment
 # define UD_IMG_JPG_EOI			0xd9		// Endo Of Image
 
-# define UD_IMG_JPG_SIGN		0xffd8ffe0	// JPG Signature
+# define UD_IMG_JPG_SIGN		0xffd8		// JPG Signature
 # define UD_IMG_PNG_SIGN_1		0x89504e47	// PNG Signature Pt 1
 # define UD_IMG_PNG_SIGN_2		0x0d0a1a0a	// PNG Signature Pt 2
 # define UD_IMG_BM_SIGN			0x424d		// Bit Map Signature
@@ -35,12 +35,28 @@
 
 typedef enum				{UD_IT_JPG, UD_IT_PNG, UD_IT_BM, UD_IT_SVG} ud_image_type;
 typedef enum				{UD_DU_JPG_UNKNOWN, UD_DU_JPG_PBINCH, UD_DU_JPG_PBCM} ud_density_unit;
+typedef enum				{UD_HC_DC, UD_HC_AC} ud_huff_class;
 
 /*typedef struct		uds_jfif
 {
 	
 }					ud_jfif;
 */
+typedef struct			uds_jpg_comp
+{
+	unsigned char		comp_id; // JPGEG DEFINIED FOR 0-255 BUT JFIF NORM ACTUALLY USE 1,2,3 ONLY
+	unsigned char		hor_sampling;	// 1, 2, 3 or 4
+	unsigned char		ver_sampling;	// same as hor
+	unsigned char		quant_mat_id;	// 0, 1, 2 or 3
+}						ud_jpg_comp;
+
+typedef struct			uds_huff
+{
+	struct uds_huff		*right_1;
+	struct uds_huff		*left_0;
+	unsigned char		val;
+	unsigned char		val_len;
+}						ud_huff;
 
 typedef struct			uds_jpg
 {
@@ -54,6 +70,13 @@ typedef struct			uds_jpg
 	ud_arr				*quantization_mat;
 	//unsigned char		*lum_quantization_mat;
 	//unsigned char		*chrom_quantization_mat;
+	unsigned char		data_precision; // ???
+	unsigned short		img_height; //in pixel
+	unsigned short		img_width; //in pixel
+	unsigned char		comp_nbr; //components nbr
+	ud_jpg_comp			*components;
+	ud_huff				*ac_huff_tables[4];
+	ud_huff				*dc_huff_tables[4];
 }						ud_jpg;
 
 typedef struct		uds_img

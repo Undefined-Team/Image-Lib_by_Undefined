@@ -13,8 +13,6 @@
 
 int				ud_img_check_jpg_signature(unsigned char *img)
 {
-	if (*img++ != ((UD_IMG_JPG_SIGN >> 24) & 0xff)) return 0;
-	if (*img++ != ((UD_IMG_JPG_SIGN >> 16) & 0xff)) return 0;
 	if (*img++ != ((UD_IMG_JPG_SIGN >> 8) & 0xff)) return 0;
 	if (*img++ != ((UD_IMG_JPG_SIGN & 0xff))) return 0;
 	return 1;
