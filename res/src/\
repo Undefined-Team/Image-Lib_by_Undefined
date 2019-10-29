@@ -28,80 +28,15 @@ ud_jpg_comp		*ud_img_jpg_assign_huff_tables(ud_jpg_comp *components, unsigned ch
 	return (components);
 }
 
-unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos)
+void			ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos)
 {
-	short	neg_mask[16] = {0xffff, 0xfffe, 0xfffc, 0xfff8,
-							0xfff0, 0xffe0, 0xffc0, 0xff80,
-							0xff00, 0xfe00, 0xfc00, 0xf800,
-							0xf000, 0xe000, 0xc000, 0x8000};
-	ud_huff *save = table;
-	while (1)
-	{
-		table = save;
-		while (table->right_1 || table->left_0)
-		{
-			printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
-			//char c = ((*img >> *bit_pos) & 1) + '0';
-			//write(1, &c, 1);
-			if ((*img >> *bit_pos) & 1)
-				table = table->right_1;
-			else
-				table = table->left_0;
-			if (!*bit_pos)
-			{
-				*bit_pos = 7;
-				++img;
-			}
-			else
-				--(*bit_pos);
-		}
-		printf("\nzero run %d AC categorie %d\n", (table->val >> 4) & 0xf, table->val & 0xf);
-		if (table->val == 0x0000)
-		{
-			printf("end of MCU");
-			//exit(1); //il fat continuer a boucler sur les mcu etc
-		}
-		unsigned char category = table->val & 0xf;
-		short val = ((*img >> *bit_pos) & 1) ? 0 : neg_mask[category]; //pk ??
-		for (int i = category - 1; i >= 0; --i)
-		{
-			printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
-			if (((*img >> *bit_pos) & 1))
-				val |= (1 << i);
-			if (!*bit_pos)
-			{
-				++img;
-				*bit_pos = 7;
-			}
-			else
-				--(*bit_pos);
-		}
-		if (val < 0)
-			++val; // bitstream wtf 0 logique
-		printf("\nvalue = %d\n", val);
-	}	
-	//val = 0xfffe;
-	//printf("\ntest = %hd\n", val);
-	/*for (int i = 15; i >= 0; --i)
-	{
-		printf("%c", ((val >> i) & 1) ? '1': '0');
-	}*/
-	return (img);
-}
-
-unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos)
-{
-	short	neg_mask[16] = {0xffff, 0xfffe, 0xfffc, 0xfff8,
-							0xfff0, 0xffe0, 0xffc0, 0xff80,
-							0xff00, 0xfe00, 0xfc00, 0xf800,
-							0xf000, 0xe000, 0xc000, 0x8000};
-
+	short	neg_mask[16] = {0xffff, 0xfffe, 0xfffc, 0xfff8}
 	printf("first char %hhu scnd %hhu table addr %p\n", *img, *(img + 1), table);
 	while (table->right_1 || table->left_0)
 	{
-		printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
-		//char c = ((*img >> *bit_pos) & 1) + '0';
-		//write(1, &c, 1);
+		printf("%c\n", ((*img >> *bit_pos) & 1) ? '1': '0');
+		char c = ((*img >> *bit_pos) & 1) + '0';
+		write(1, &c, 1);
 		if ((*img >> *bit_pos) & 1)
 			table = table->right_1;
 		else
@@ -116,21 +51,20 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 	}
 	unsigned char category = table->val;
 	printf("\nDC categorie %hhd\n", table->val);
-	short diff_val = ((*img >> *bit_pos) & 1) ? 0 : neg_mask[category]; //pk ?? 
-	/*if (!*bit_pos)
+	short diff_val = ((*img >> *bit_pos) & 1) ? 0xffff : 0;
+	if (!*bit_pos)
 	{
 		*bit_pos = 7;
 		++img;
 	}
 	else
 		--(*bit_pos);
-	*///--category;//a changer
-	//printf("diff value = %hd\n", diff_val);
-	for (int i = category - 1; i >= 0; --i)
+	--category;//a changer
+	for (int i = category - 1; i >= 0; ++i)
 	{
-		printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
+		printf("%c\n", ((*img >> *bit_pos) & 1) ? '1': '0');
 		if (((*img >> *bit_pos) & 1))
-			diff_val |= (1 << i);
+			diff_val 
 		if (!*bit_pos)
 		{
 			++img;
@@ -138,19 +72,15 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 		}
 		else
 			--(*bit_pos);
+
 	}
-	if (diff_val < 0)
-		++diff_val; // bitstream wtf 0 logique
-	printf("\ndiff value = %hd\n", diff_val);
-	return (img);
 }
 
 void			ud_img_jpg_parse_mcu(ud_jpg_comp *comp, ud_jpg *jpg, unsigned char *img, unsigned char *bit_pos)
 {
 	if (jpg )
 		;
-	img = ud_img_parse_dc_mcu(comp->dc_table, img, bit_pos);
-	img = ud_img_parse_ac_mcu(comp->ac_table, img, bit_pos);
+	ud_img_parse_dc_mcu(comp->dc_table, img, bit_pos);
 }
 
 unsigned char	*ud_img_jpg_scan_file(unsigned char *img, ud_jpg *jpg)

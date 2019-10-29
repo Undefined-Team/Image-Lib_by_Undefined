@@ -42,13 +42,6 @@ typedef enum				{UD_HC_DC, UD_HC_AC} ud_huff_class;
 	
 }					ud_jfif;
 */
-typedef struct			uds_jpg_comp
-{
-	unsigned char		comp_id; // JPGEG DEFINIED FOR 0-255 BUT JFIF NORM ACTUALLY USE 1,2,3 ONLY
-	unsigned char		hor_sampling;	// 1, 2, 3 or 4
-	unsigned char		ver_sampling;	// same as hor
-	unsigned char		quant_mat_id;	// 0, 1, 2 or 3
-}						ud_jpg_comp;
 
 typedef struct			uds_huff
 {
@@ -57,6 +50,16 @@ typedef struct			uds_huff
 	unsigned char		val;
 	unsigned char		val_len;
 }						ud_huff;
+
+typedef struct			uds_jpg_comp
+{
+	unsigned char		comp_id; // JPGEG DEFINIED FOR 0-255 BUT JFIF NORM ACTUALLY USE 1,2,3 ONLY
+	unsigned char		hor_sampling;	// 1, 2, 3 or 4
+	unsigned char		ver_sampling;	// same as hor
+	unsigned char		quant_mat_id;	// 0, 1, 2 or 3
+	ud_huff				*ac_table;
+	ud_huff				*dc_table;
+}						ud_jpg_comp;
 
 typedef struct			uds_jpg
 {
