@@ -19,6 +19,43 @@ unsigned char	ud_img_get_quant_bit_id(unsigned char id_b)
 	return (id);
 }
 
+void			ud_img_zz_assign(int **val, int zz_pos, int new_val)
+{
+	int		row[64] = { 0,
+						0, 1,
+						2, 1, 0,
+						0, 1, 2, 3,
+						4, 3, 2, 1, 0,
+						0, 1, 2, 3, 4, 5,
+						6, 5, 4, 3, 2, 1, 0,
+						0, 1, 2, 3, 4, 5, 6, 7,
+						7, 6, 5, 4, 3, 2, 1,
+						2, 3, 4, 5, 6, 7,
+						7, 6, 5, 4, 3,
+						4, 5, 6, 7,
+						7, 6, 5,
+						6, 7,
+						7};
+	int		col[64] = {	0,
+						1, 0,
+						0, 1, 2,
+						3, 2, 1, 0,
+						0, 1, 2, 3, 4,
+						5, 4, 3, 2, 1, 0,
+						0, 1, 2, 3, 4, 5, 6,
+						7, 6, 5, 4, 3, 2, 1, 0,
+						1, 2, 3, 4, 5, 6, 7,
+						7, 6, 5, 4, 3, 2,
+						3, 4, 5, 6, 7,
+						7, 6, 5, 4,
+						5, 6, 7,
+						7, 6,
+						7};
+
+	printf("val[%d][%d] = %d : zz_pos : %d\n", row[zz_pos], col[zz_pos], new_val, zz_pos);
+	val[row[zz_pos]][col[zz_pos]] = new_val;
+}
+
 ud_jpg_comp		*ud_img_jpg_assign_huff_tables(ud_jpg_comp *components, unsigned char comp_id, unsigned char dc_hf_id, unsigned char ac_hf_id, ud_jpg *jpg)
 {
 	while (components->comp_id != comp_id)
@@ -28,21 +65,20 @@ ud_jpg_comp		*ud_img_jpg_assign_huff_tables(ud_jpg_comp *components, unsigned ch
 	return (components);
 }
 
-unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos)
+unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos, int **mcu_val)
 {
 	short	neg_mask[16] = {0xffff, 0xfffe, 0xfffc, 0xfff8,
 							0xfff0, 0xffe0, 0xffc0, 0xff80,
 							0xff00, 0xfe00, 0xfc00, 0xf800,
 							0xf000, 0xe000, 0xc000, 0x8000};
+	size_t	zz_index = 1;
 	ud_huff *save = table;
 	while (1)
 	{
 		table = save;
 		while (table->right_1 || table->left_0)
 		{
-			printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
-			//char c = ((*img >> *bit_pos) & 1) + '0';
-			//write(1, &c, 1);
+		//	printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
 			if ((*img >> *bit_pos) & 1)
 				table = table->right_1;
 			else
@@ -55,17 +91,40 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned 
 			else
 				--(*bit_pos);
 		}
-		printf("\nzero run %d AC categorie %d\n", (table->val >> 4) & 0xf, table->val & 0xf);
+		unsigned char zero_run = ((table->val >> 4) & 0xf);
+		unsigned char category = table->val & 0xf;
+		//printf("\nzero run %hhu AC categorie %hhu\n", zero_run, category);
 		if (table->val == 0x0000)
 		{
-			printf("end of MCU");
+			for (; zz_index != 64; ++zz_index)
+				ud_img_zz_assign(mcu_val, zz_index, 0);
 			//exit(1); //il fat continuer a boucler sur les mcu etc
+			for (ud_ut_count i = 0; i < 8; ++i)
+			{
+				for (ud_ut_count j = 0; j < 8; ++j)
+					printf("%-4d ", mcu_val[i][j]);
+				printf("\n");
+			}
+			printf("bit_pos %hhu\n", *bit_pos);
+			/*if (*bit_pos != 7)
+			{
+				while (*bit_pos)
+				{
+					printf("%c", ((*img >> *bit_pos) & 1) ? '1' : '0');
+					--(*bit_pos);
+				}
+				printf("%c", (*img & 1) ? '1' : '0');
+				*bit_pos = 7;
+				++img;
+			}*/
+			return (img);
 		}
-		unsigned char category = table->val & 0xf;
+		while (zero_run--)
+			ud_img_zz_assign(mcu_val, zz_index++, 0);
 		short val = ((*img >> *bit_pos) & 1) ? 0 : neg_mask[category]; //pk ??
 		for (int i = category - 1; i >= 0; --i)
 		{
-			printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
+		//	printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
 			if (((*img >> *bit_pos) & 1))
 				val |= (1 << i);
 			if (!*bit_pos)
@@ -77,8 +136,20 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned 
 				--(*bit_pos);
 		}
 		if (val < 0)
-			++val; // bitstream wtf 0 logique
-		printf("\nvalue = %d\n", val);
+			++val;
+		//printf("\nindex = %zu\n", zz_index);
+		ud_img_zz_assign(mcu_val, zz_index++, val);
+		if (zz_index == 64)
+		{
+			for (ud_ut_count i = 0; i < 8; ++i)
+			{
+				for (ud_ut_count j = 0; j < 8; ++j)
+					printf("%-4d ", mcu_val[i][j]);
+				printf("\n");
+			}
+			printf("bit_pos %hhu\n", *bit_pos);
+			return (img);
+		}
 	}	
 	//val = 0xfffe;
 	//printf("\ntest = %hd\n", val);
@@ -89,7 +160,7 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned 
 	return (img);
 }
 
-unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos)
+unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos, int **mcu_val, int *dc_prev)
 {
 	short	neg_mask[16] = {0xffff, 0xfffe, 0xfffc, 0xfff8,
 							0xfff0, 0xffe0, 0xffc0, 0xff80,
@@ -99,7 +170,7 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 	printf("first char %hhu scnd %hhu table addr %p\n", *img, *(img + 1), table);
 	while (table->right_1 || table->left_0)
 	{
-		printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
+		//printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
 		//char c = ((*img >> *bit_pos) & 1) + '0';
 		//write(1, &c, 1);
 		if ((*img >> *bit_pos) & 1)
@@ -115,7 +186,7 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 			--(*bit_pos);
 	}
 	unsigned char category = table->val;
-	printf("\nDC categorie %hhd\n", table->val);
+	printf("\nDC categorie %hhx\n", table->val);
 	short diff_val = ((*img >> *bit_pos) & 1) ? 0 : neg_mask[category]; //pk ?? 
 	/*if (!*bit_pos)
 	{
@@ -128,7 +199,7 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 	//printf("diff value = %hd\n", diff_val);
 	for (int i = category - 1; i >= 0; --i)
 	{
-		printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
+	//	printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
 		if (((*img >> *bit_pos) & 1))
 			diff_val |= (1 << i);
 		if (!*bit_pos)
@@ -141,16 +212,35 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 	}
 	if (diff_val < 0)
 		++diff_val; // bitstream wtf 0 logique
-	printf("\ndiff value = %hd\n", diff_val);
+//	printf("\ndiff value = %hd\n", diff_val);
+	
+	mcu_val[0][0] = *dc_prev + diff_val;
+	*dc_prev = mcu_val[0][0];
 	return (img);
 }
 
-void			ud_img_jpg_parse_mcu(ud_jpg_comp *comp, ud_jpg *jpg, unsigned char *img, unsigned char *bit_pos)
+unsigned char	*ud_img_jpg_parse_mcu(ud_jpg_comp *comp, ud_jpg *jpg, unsigned char *img, unsigned char *bit_pos)
 {
-	if (jpg )
+	if (jpg)
 		;
-	img = ud_img_parse_dc_mcu(comp->dc_table, img, bit_pos);
-	img = ud_img_parse_ac_mcu(comp->ac_table, img, bit_pos);
+	ud_mcu	*mcu;
+
+	if (!comp->mcu_lst)
+	{
+		ud_ut_prot_malloc(comp->mcu_lst = ud_ut_malloc(sizeof(ud_mcu)));
+		comp->mcu_first = comp->mcu_lst;
+	}
+	else
+	{
+		ud_ut_prot_malloc(comp->mcu_lst->next = ud_ut_malloc(sizeof(ud_mcu)));
+		comp->mcu_lst = comp->mcu_lst->next;
+	}
+	mcu = comp->mcu_lst;
+	ud_ut_prot_malloc(mcu->val = ud_ut_malloc(sizeof(int *) * 8));
+	for (ud_ut_count i = 0; i < 8; ++i) ud_ut_prot_malloc(mcu->val[i] = ud_ut_malloc(sizeof(int) * 8));
+	img = ud_img_parse_dc_mcu(comp->dc_table, img, bit_pos, mcu->val, &(comp->dc_prev));
+	img = ud_img_parse_ac_mcu(comp->ac_table, img, bit_pos, mcu->val);
+	return (img);
 }
 
 unsigned char	*ud_img_jpg_scan_file(unsigned char *img, ud_jpg *jpg)
@@ -158,7 +248,8 @@ unsigned char	*ud_img_jpg_scan_file(unsigned char *img, ud_jpg *jpg)
 	unsigned short	seg_len = ((((unsigned short)*img) << 8) | (unsigned short)*(img + 1));
 	printf("Start of Scan marker : seg len %d\n", seg_len);
 	unsigned char	comp_nbr = *(img + 2);
-	unsigned char	***mcu;
+	//unsigned int	***mcu;
+	ud_mcu			*mcu = NULL;
 	//ud_jpg_comp		actual_comp;
 	ud_jpg_comp		*components = jpg->components;
 	ud_jpg_comp		*comp_list[comp_nbr];
@@ -172,19 +263,21 @@ unsigned char	*ud_img_jpg_scan_file(unsigned char *img, ud_jpg *jpg)
 		printf("comp id %hhu dc_huff %hhu ac_huff %hhu\n", comp_id, dc_hf_id, ac_hf_id);
 		comp_list[i] = ud_img_jpg_assign_huff_tables(components, comp_id, dc_hf_id, ac_hf_id, jpg);
 	}
-	ud_ut_prot_malloc(mcu = ud_ut_malloc(sizeof(unsigned char **) * comp_nbr));
+	ud_ut_prot_malloc(mcu = ud_ut_malloc(sizeof(ud_mcu) * comp_nbr));
 	unsigned char	spec_start = *img++;
 	unsigned char	spec_end = *img++;
 	unsigned char	succ_approx = *img++;
 
 	printf("spectral start %hhu spectral end %hhu successive approximation %hhu (not used )\n", spec_start, spec_end, succ_approx);
+	unsigned char	bit_pos = 7;
+	//int ind = 0;
 	while (1)
 	{
-		unsigned char	bit_pos = 7;
 		for (ud_ut_count i = 0; i < comp_nbr; ++i)
 		{
 			//actual_comp = comp_list[i];
-			ud_img_jpg_parse_mcu(comp_list[i], jpg, img, &bit_pos);
+			img = ud_img_jpg_parse_mcu(comp_list[i], jpg, img, &bit_pos);
+			//printf("nb_mcu %d\n", ind++);
 			
 		}
 	}
@@ -193,8 +286,8 @@ unsigned char	*ud_img_jpg_scan_file(unsigned char *img, ud_jpg *jpg)
 	if (img && jpg)
 		;
 	return (img);
-	
 }
+
 
 size_t			ud_img_get_huff_table_size(unsigned char *img, size_t *val_nbr)
 {
@@ -232,6 +325,7 @@ void			ud_img_create_end_huff(ud_huff *table, unsigned char *img)
 	table->right_1 = NULL;
 	table->left_0 = NULL;
 }
+
 unsigned char	*ud_img_fill_huff_table(ud_huff *table, size_t *table_index, unsigned char *img, unsigned char *stage, size_t *nb_val)
 {
 	ud_huff	*actual = table + *table_index;
@@ -409,6 +503,9 @@ unsigned char	*ud_img_jpg_dct_ctr(unsigned char *img, ud_jpg *jpg, unsigned char
 		comp_lst->hor_sampling = ud_img_get_quant_bit_id((*img & 0xf0) >> 4) + 1;
 		comp_lst->ver_sampling = ud_img_get_quant_bit_id(*img++ & 0x0f) + 1;
 		comp_lst->quant_mat_id = *img++;
+		comp_lst->mcu_lst = NULL;
+		comp_lst->mcu_first = NULL;
+		comp_lst->dc_prev = 0;
 		printf("\tcomp[%hhu] :\n\t\t horizontal sampling : %hhu\n\t\t vertical sampling : %hhu\n\t\t quant mat associed : %hhu\n", comp_lst->comp_id, comp_lst->hor_sampling, comp_lst->ver_sampling, comp_lst->quant_mat_id);
 	}
 	return (img);

@@ -43,6 +43,12 @@ typedef enum				{UD_HC_DC, UD_HC_AC} ud_huff_class;
 }					ud_jfif;
 */
 
+typedef struct			uds_mcu
+{
+	int					**val;
+	struct uds_mcu		*next;
+}						ud_mcu;
+
 typedef struct			uds_huff
 {
 	struct uds_huff		*right_1;
@@ -59,6 +65,9 @@ typedef struct			uds_jpg_comp
 	unsigned char		quant_mat_id;	// 0, 1, 2 or 3
 	ud_huff				*ac_table;
 	ud_huff				*dc_table;
+	ud_mcu				*mcu_lst;
+	ud_mcu				*mcu_first;
+	int					dc_prev;
 }						ud_jpg_comp;
 
 typedef struct			uds_jpg
