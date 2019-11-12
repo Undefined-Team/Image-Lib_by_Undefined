@@ -7,7 +7,8 @@
 #include <ud_array.h>
 
 // Macro
-
+# define UD_M_1SQRT2			0.70710678118
+# define UD_M_PI				3.14159265359
 # define UD_IMG_JPG_SOI			0xd8		// Start Of Image JPEG FILE EXTENSION
 # define UD_IMG_JPG_SOF_BD		0xc0		// Start Of Frame (Baseline DCT)
 # define UD_IMG_JPG_SOF_PD		0xc2		// Start Of Frame (Progressive DCT)
@@ -30,11 +31,13 @@
 # define UD_IMG_SVG_SIGN_2		0x6c		// SVG Signature Pt 2
 
 # define ud_img_jpg_check_marker_start(unsigned_char)		unsigned_char == 0xff ? 1 : 0
-
+# define ud_round(float_val)								float_val < float_val - 0.5 ? float_val + 1 : float_val
+# define ud_prot_overflow(val)								val > 255 ? 255 : val
 // Structures
 
 typedef enum				{UD_IT_JPG, UD_IT_PNG, UD_IT_BM, UD_IT_SVG} ud_image_type;
 typedef enum				{UD_DU_JPG_UNKNOWN, UD_DU_JPG_PBINCH, UD_DU_JPG_PBCM} ud_density_unit;
+typedef enum				{UD_CS_RGB, UD_CS_YCBCR} ud_img_color_space;
 typedef enum				{UD_HC_DC, UD_HC_AC} ud_huff_class;
 
 /*typedef struct		uds_jfif
@@ -45,8 +48,9 @@ typedef enum				{UD_HC_DC, UD_HC_AC} ud_huff_class;
 
 typedef struct			uds_mcu
 {
-	int					**val;
+	int					***val; //need to be changed for opti to many allocation
 	struct uds_mcu		*next;
+	int	nb;
 }						ud_mcu;
 
 typedef struct			uds_huff
@@ -85,23 +89,42 @@ typedef struct			uds_jpg
 	unsigned char		data_precision; // ???
 	unsigned short		img_height; //in pixel
 	unsigned short		img_width; //in pixel
+	unsigned short		mcu_height; //in pixel
+	unsigned short		mcu_width; //in pixel
 	unsigned char		comp_nbr; //components nbr
 	ud_jpg_comp			*components;
 	ud_huff				*ac_huff_tables[4];
 	ud_huff				*dc_huff_tables[4];
+	ud_mcu				*mcu_lst;
 }						ud_jpg;
 
-typedef struct		uds_img
+typedef struct			uds_img
 {
-	ud_image_type	image_type;
-	
-	
-}					ud_img;
+	ud_img_color_space	color_space;
+	ud_arr				*pixels;
+	size_t				width;
+	size_t				height;
+}						ud_img;
+
+typedef struct			uds_img_pix_rgb
+{
+	unsigned char		red;
+	unsigned char		green;
+	unsigned char		blue;
+}						ud_img_pix_rgb;
+
+typedef struct			uds_img_pix_ycbcr
+{
+	unsigned char		luminance;
+	unsigned char		chroma_blue;
+	unsigned char		chroma_red;
+}						ud_img_pix_ycbcr;
+
 // Prototypes
 
 void	ud_img_parse_image(char *s);
-
-int		**ud_img_decryption_jpg_to_rgb(unsigned char *img); //a changer en ud arr *
+void	mlx_print_this_shit(ud_img *img);
+ud_img		*ud_img_decryption_jpg_to_rgb(unsigned char *img); //a changer en ud arr *
 
 
 #endif

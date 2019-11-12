@@ -65,13 +65,14 @@ ud_image_type	ud_img_parse_signature(unsigned char *img)
 
 void			ud_img_parse_image(char *img_path)
 {
-	char	*img = ud_file_read(img_path);
+	char	*img_str = ud_file_read(img_path);
 	//ud_arr	*i
-	int		**rgb_img;
-	ud_image_type	image_type = ud_img_parse_signature((unsigned char *)img);
+	//int		**rgb_img;
+	ud_img	*img;
+	ud_image_type	image_type = ud_img_parse_signature((unsigned char *)img_str);
 	
 	if (image_type == UD_IT_JPG)
-		rgb_img = ud_img_decryption_jpg_to_rgb((unsigned char *)img);
+		img = ud_img_decryption_jpg_to_rgb((unsigned char *)img_str);
 	//rgbprintf("JPG \n");
 	else if (image_type == UD_IT_PNG)
 		printf("PNG \n");

@@ -1,4 +1,4 @@
-#include "ud_image.h"
+#include "../res/include/ud_image.h"
 
 void	ud_img_parse_zig_zag(char **new_mat, unsigned char *img, size_t size_y, size_t size_x);
 

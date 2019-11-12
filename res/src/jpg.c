@@ -1,4 +1,5 @@
 # include "ud_image.h"
+#include <math.h>
 
 ud_density_unit	ud_img_jpg_get_density_unit(unsigned char density)
 {
@@ -19,7 +20,7 @@ unsigned char	ud_img_get_quant_bit_id(unsigned char id_b)
 	return (id);
 }
 
-void			ud_img_zz_assign(int **val, int zz_pos, int new_val)
+void			ud_img_zz_assign(int val[8][8], int zz_pos, int new_val)
 {
 	int		row[64] = { 0,
 						0, 1,
@@ -52,7 +53,7 @@ void			ud_img_zz_assign(int **val, int zz_pos, int new_val)
 						7, 6,
 						7};
 
-	printf("val[%d][%d] = %d : zz_pos : %d\n", row[zz_pos], col[zz_pos], new_val, zz_pos);
+	//printf("val[%d][%d] = %d : zz_pos : %d\n", row[zz_pos], col[zz_pos], new_val, zz_pos);
 	val[row[zz_pos]][col[zz_pos]] = new_val;
 }
 
@@ -65,7 +66,7 @@ ud_jpg_comp		*ud_img_jpg_assign_huff_tables(ud_jpg_comp *components, unsigned ch
 	return (components);
 }
 
-unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos, int **mcu_val)
+unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos, int channel_val[8][8])
 {
 	short	neg_mask[16] = {0xffff, 0xfffe, 0xfffc, 0xfff8,
 							0xfff0, 0xffe0, 0xffc0, 0xff80,
@@ -87,6 +88,13 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned 
 			{
 				*bit_pos = 7;
 				++img;
+				if (*(img - 1) == 0xff)
+				{
+					if (!*img)
+						img++;
+					else
+						printf("marker found : %hhx\n", *img);//parse marker etc
+				}
 			}
 			else
 				--(*bit_pos);
@@ -94,18 +102,19 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned 
 		unsigned char zero_run = ((table->val >> 4) & 0xf);
 		unsigned char category = table->val & 0xf;
 		//printf("\nzero run %hhu AC categorie %hhu\n", zero_run, category);
-		if (table->val == 0x0000)
+		if (table->val == 0x00)
 		{
 			for (; zz_index != 64; ++zz_index)
-				ud_img_zz_assign(mcu_val, zz_index, 0);
+				ud_img_zz_assign(channel_val, zz_index, 0);
 			//exit(1); //il fat continuer a boucler sur les mcu etc
+			printf("quantized mat\n");
 			for (ud_ut_count i = 0; i < 8; ++i)
 			{
 				for (ud_ut_count j = 0; j < 8; ++j)
-					printf("%-4d ", mcu_val[i][j]);
+					printf("%-4d ", channel_val[i][j]);
 				printf("\n");
 			}
-			printf("bit_pos %hhu\n", *bit_pos);
+			//printf("bit_pos %hhu\n", *bit_pos);
 			/*if (*bit_pos != 7)
 			{
 				while (*bit_pos)
@@ -120,7 +129,7 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned 
 			return (img);
 		}
 		while (zero_run--)
-			ud_img_zz_assign(mcu_val, zz_index++, 0);
+			ud_img_zz_assign(channel_val, zz_index++, 0);
 		short val = ((*img >> *bit_pos) & 1) ? 0 : neg_mask[category]; //pk ??
 		for (int i = category - 1; i >= 0; --i)
 		{
@@ -131,6 +140,13 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned 
 			{
 				++img;
 				*bit_pos = 7;
+				if (*(img - 1) == 0xff)
+				{
+					if (!*img)
+						img++;
+					else
+						printf("marker found : %hhx\n", *img);//parse marker etc
+				}
 			}
 			else
 				--(*bit_pos);
@@ -138,16 +154,17 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned 
 		if (val < 0)
 			++val;
 		//printf("\nindex = %zu\n", zz_index);
-		ud_img_zz_assign(mcu_val, zz_index++, val);
+		ud_img_zz_assign(channel_val, zz_index++, val);
 		if (zz_index == 64)
 		{
+			printf("quantized mat\n");
 			for (ud_ut_count i = 0; i < 8; ++i)
 			{
 				for (ud_ut_count j = 0; j < 8; ++j)
-					printf("%-4d ", mcu_val[i][j]);
+					printf("%-4d ", channel_val[i][j]);
 				printf("\n");
 			}
-			printf("bit_pos %hhu\n", *bit_pos);
+			//printf("bit_pos %hhu\n", *bit_pos);
 			return (img);
 		}
 	}	
@@ -160,14 +177,14 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned 
 	return (img);
 }
 
-unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos, int **mcu_val, int *dc_prev)
+unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos, int channel_val[8][8], int *dc_prev)//, int *check_eob)
 {
 	short	neg_mask[16] = {0xffff, 0xfffe, 0xfffc, 0xfff8,
 							0xfff0, 0xffe0, 0xffc0, 0xff80,
 							0xff00, 0xfe00, 0xfc00, 0xf800,
 							0xf000, 0xe000, 0xc000, 0x8000};
 
-	printf("first char %hhu scnd %hhu table addr %p\n", *img, *(img + 1), table);
+	//printf("first char %hhu scnd %hhu thrd %hhu table addr %p\n", *img, *(img + 1), *(img + 2), table);
 	while (table->right_1 || table->left_0)
 	{
 		//printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
@@ -181,13 +198,20 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 		{
 			*bit_pos = 7;
 			++img;
+			if (*(img - 1) == 0xff)
+			{
+				if (!*img)
+					img++;
+				else
+					printf("marker found : %hhx\n", *img);//parse marker etc
+			}
 		}
 		else
 			--(*bit_pos);
 	}
 	unsigned char category = table->val;
-	printf("\nDC categorie %hhx\n", table->val);
-	short diff_val = ((*img >> *bit_pos) & 1) ? 0 : neg_mask[category]; //pk ?? 
+	//printf("\nDC categorie %hhx (zero count : %d)\n", table->val, table->val >> 4);
+	short diff_val = ((*img >> *bit_pos) & 1) ? 0 : neg_mask[category]; //pk ??
 	/*if (!*bit_pos)
 	{
 		*bit_pos = 7;
@@ -197,6 +221,8 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 		--(*bit_pos);
 	*///--category;//a changer
 	//printf("diff value = %hd\n", diff_val);
+	//if (table->val == 0x00)
+	//	*check_eob = 1;
 	for (int i = category - 1; i >= 0; --i)
 	{
 	//	printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
@@ -206,6 +232,13 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 		{
 			++img;
 			*bit_pos = 7;
+			if (*(img - 1) == 0xff)
+			{
+				if (!*img)
+					img++;
+				else
+					printf("marker found : %hhx\n", *img);//parse marker etc
+			}
 		}
 		else
 			--(*bit_pos);
@@ -214,18 +247,119 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 		++diff_val; // bitstream wtf 0 logique
 //	printf("\ndiff value = %hd\n", diff_val);
 	
-	mcu_val[0][0] = *dc_prev + diff_val;
-	*dc_prev = mcu_val[0][0];
+	channel_val[0][0] = *dc_prev + diff_val;
+	*dc_prev = channel_val[0][0];
 	return (img);
 }
-
-unsigned char	*ud_img_jpg_parse_mcu(ud_jpg_comp *comp, ud_jpg *jpg, unsigned char *img, unsigned char *bit_pos)
+/*
+double	ud_pow(double x, int pow)
 {
-	if (jpg)
-		;
-	ud_mcu	*mcu;
+	if (!pow)
+		return (1);
+	if (pow == 1)
+		return (x);
+	return (x * ud_pow(x, pow - 1));
+}
 
-	if (!comp->mcu_lst)
+double ud_cos(double x)
+{
+	double			s = 1.0;
+	double			mem = 0;
+	unsigned int	i = 2,k = 1;
+	unsigned long	f = 1;
+
+	//for (ud_ut_count j = 0; j < 10; ++j)
+	//{
+		f = f * (i - 1) * i;
+		s = s + (ud_pow(x, i) * ud_pow(-1, k)) / f;
+		if (s == mem)
+			break;
+		mem = s;
+		i += 2;
+		++k;
+	//}
+	return s;
+}
+*/
+void			ud_img_jpg_dequantize_mat(int channel_val[8][8], char **quant_mat)
+{
+	printf("dequantized mat\n");
+	for (ud_ut_count i = 0; i < 8; ++i)
+	{
+		for (ud_ut_count j = 0; j < 8; ++j)
+		{
+			channel_val[i][j] *= quant_mat[i][j];
+			printf("%-4d ", channel_val[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void			ud_img_jpg_compute_idct(int channel_val[8][8], int idct_val[8][8])
+{
+	
+	for (ud_ut_count y = 0; y < 8; ++y)
+	{
+		for (ud_ut_count x = 0; x < 8; ++x)
+		{
+			double sum = 0.0;
+			for (ud_ut_count u = 0; u < 8; ++u)
+			{
+				for (ud_ut_count v = 0; v < 8; ++v)
+				{
+					float Cu = u == 0 ? UD_M_1SQRT2 : 1.0;
+					float Cv = v == 0 ? UD_M_1SQRT2 : 1.0;
+					sum += Cu * Cv * (double)channel_val[u][v] * cos((2 * x + 1) * u * UD_M_PI / 16.0) * cos((2 * y + 1) * v * UD_M_PI / 16.0);
+				}
+			}
+			sum = sum / 4.0 + 128;
+			idct_val[x][y] = ud_prot_overflow(ud_round(sum));// y, x ??---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			//printf("sum : %f, idct[%zu][%zu] = %d\n", sum, x, y, idct_val[x][y]);
+		}
+	
+	}
+}
+void			ud_img_jpg_reverse_downsampling(int **channel, int idct_val[8][8], ud_jpg_comp *comp, ud_jpg *jpg, size_t chan_off)
+{
+	size_t		step_row, step_col, start_row, start_col, end_row, end_col;
+	size_t		chan_row, chan_col;
+
+	step_row = jpg->mcu_height / 8 / comp->ver_sampling;
+	step_col = jpg->mcu_width / 8 / comp->hor_sampling;
+	start_row = (chan_off * 8 * step_col / jpg->mcu_width) * 8 * step_row;
+	start_col = (chan_off * 8 * step_col) % jpg->mcu_width;
+	end_row = start_row + 8 * step_row;
+	end_col = start_col + 8 * step_col;
+
+	chan_row = start_row;
+	printf(" ver sampl/hor %hhu/%hhu step row %zu step col %zu start row %zu start_col %zu\n", comp->ver_sampling, comp->hor_sampling, step_row, step_col, start_row, start_col);
+	for (ud_ut_count i_row = 0; i_row < 8; ++i_row, chan_row += step_row)
+	{
+		chan_col = start_col;
+		for (ud_ut_count j_col = 0; j_col < 8; ++j_col, chan_col += step_col)
+		{
+			for (ud_ut_count i = 0; i < step_row; ++i)
+			{
+				for (ud_ut_count j = 0; j < step_col; ++j)
+				{
+					channel[chan_row + i][chan_col + j] = idct_val[i_row][j_col];
+				}
+			}
+		}
+	}
+}
+
+
+unsigned char	*ud_img_jpg_parse_mcu(ud_jpg_comp *comp, ud_jpg *jpg, unsigned char *img, unsigned char *bit_pos, int **channel, size_t chan_off)
+{
+	if (jpg && channel && chan_off)
+		;
+	//ud_mcu	*mcu;
+	static int	channel_val[8][8];
+	static int	idct_val[8][8];
+//	int		check_eob = 0;
+
+	/*if (!comp->mcu_lst)
 	{
 		ud_ut_prot_malloc(comp->mcu_lst = ud_ut_malloc(sizeof(ud_mcu)));
 		comp->mcu_first = comp->mcu_lst;
@@ -234,12 +368,17 @@ unsigned char	*ud_img_jpg_parse_mcu(ud_jpg_comp *comp, ud_jpg *jpg, unsigned cha
 	{
 		ud_ut_prot_malloc(comp->mcu_lst->next = ud_ut_malloc(sizeof(ud_mcu)));
 		comp->mcu_lst = comp->mcu_lst->next;
-	}
-	mcu = comp->mcu_lst;
-	ud_ut_prot_malloc(mcu->val = ud_ut_malloc(sizeof(int *) * 8));
-	for (ud_ut_count i = 0; i < 8; ++i) ud_ut_prot_malloc(mcu->val[i] = ud_ut_malloc(sizeof(int) * 8));
-	img = ud_img_parse_dc_mcu(comp->dc_table, img, bit_pos, mcu->val, &(comp->dc_prev));
-	img = ud_img_parse_ac_mcu(comp->ac_table, img, bit_pos, mcu->val);
+	}*/
+	//mcu = comp->mcu_lst;
+	//ud_ut_prot_malloc(mcu->val = ud_ut_malloc(sizeof(int *) * 8));
+	//for (ud_ut_count i = 0; i < 8; ++i) ud_ut_prot_malloc(mcu->val[i] = ud_ut_malloc(sizeof(int) * 8));
+	img = ud_img_parse_dc_mcu(comp->dc_table, img, bit_pos, channel_val, &(comp->dc_prev));//, &check_eob);
+	//if (!mcu->val[0][0])
+	//if (!check_eob)
+	img = ud_img_parse_ac_mcu(comp->ac_table, img, bit_pos, channel_val);
+	ud_img_jpg_dequantize_mat(channel_val, ((char ***)jpg->quantization_mat->val)[comp->quant_mat_id]);
+	ud_img_jpg_compute_idct(channel_val, idct_val);
+	ud_img_jpg_reverse_downsampling(channel, idct_val, comp, jpg, chan_off);
 	return (img);
 }
 
@@ -250,6 +389,7 @@ unsigned char	*ud_img_jpg_scan_file(unsigned char *img, ud_jpg *jpg)
 	unsigned char	comp_nbr = *(img + 2);
 	//unsigned int	***mcu;
 	ud_mcu			*mcu = NULL;
+	ud_mcu			*prev = NULL;
 	//ud_jpg_comp		actual_comp;
 	ud_jpg_comp		*components = jpg->components;
 	ud_jpg_comp		*comp_list[comp_nbr];
@@ -263,7 +403,6 @@ unsigned char	*ud_img_jpg_scan_file(unsigned char *img, ud_jpg *jpg)
 		printf("comp id %hhu dc_huff %hhu ac_huff %hhu\n", comp_id, dc_hf_id, ac_hf_id);
 		comp_list[i] = ud_img_jpg_assign_huff_tables(components, comp_id, dc_hf_id, ac_hf_id, jpg);
 	}
-	ud_ut_prot_malloc(mcu = ud_ut_malloc(sizeof(ud_mcu) * comp_nbr));
 	unsigned char	spec_start = *img++;
 	unsigned char	spec_end = *img++;
 	unsigned char	succ_approx = *img++;
@@ -271,21 +410,53 @@ unsigned char	*ud_img_jpg_scan_file(unsigned char *img, ud_jpg *jpg)
 	printf("spectral start %hhu spectral end %hhu successive approximation %hhu (not used )\n", spec_start, spec_end, succ_approx);
 	unsigned char	bit_pos = 7;
 	//int ind = 0;
-	while (1)
+	size_t			mcu_nbr = jpg->img_width / jpg->mcu_width;
+	if (jpg->img_width % jpg->mcu_width)
+		++mcu_nbr;
+	if (jpg->img_height % jpg->mcu_height)
+		mcu_nbr *= (jpg->img_height / jpg->mcu_height + 1);
+	else
+		mcu_nbr *= (jpg->img_height / jpg->mcu_height);
+	//jpg->img_height * jpg->img_width / 64 + 64 - (jpg->img_height * jpg->img_width % 64);
+	printf("nb mcu = %zu\n", mcu_nbr);
+	
+	for (ud_ut_count z = 0; z < mcu_nbr; ++z)
 	{
+		ud_ut_prot_malloc(mcu = ud_ut_malloc(sizeof(ud_mcu)));
+		ud_ut_prot_malloc(mcu->val = ud_ut_malloc(sizeof(int **) * (comp_nbr + 1)));
+		if (prev)
+			prev->next = mcu;
+		else
+			jpg->mcu_lst = mcu;
+		int		***mcu_val = mcu->val;
+		mcu_val[comp_nbr] = NULL;
+		mcu->nb = (int)z;
 		for (ud_ut_count i = 0; i < comp_nbr; ++i)
 		{
+			ud_ut_prot_malloc(mcu_val[i] = ud_ut_malloc(sizeof(int *) * (jpg->mcu_height)));
+			//mcu_val[i][jpg->mcu_height] = NULL;
+			for (ud_ut_count x = 0; x < jpg->mcu_height; ++x)  ud_ut_prot_malloc(mcu_val[i][x] = ud_ut_malloc(sizeof(int) * (jpg->mcu_width)));
+			size_t	nb_iter = comp_list[i]->hor_sampling * comp_list[i]->ver_sampling;
+			printf("mcu[%zu] parse comp[%zu]\n", z, i);
 			//actual_comp = comp_list[i];
-			img = ud_img_jpg_parse_mcu(comp_list[i], jpg, img, &bit_pos);
-			//printf("nb_mcu %d\n", ind++);
-			
+			for (ud_ut_count j = 0; j < nb_iter; ++j)
+			{
+				img = ud_img_jpg_parse_mcu(comp_list[i], jpg, img, &bit_pos, mcu_val[i], j);
+			}
+			for (int r = 0 ; r < jpg->mcu_height; ++r)
+			{
+				for (int c = 0 ; c < jpg->mcu_width; ++c)
+				{
+					printf("%-4d ", mcu_val[i][r][c]);
+				}
+				printf("\n");
+			}
+
 		}
+		prev = mcu;
 	}
-	//for (ud_ut_count i = 0; i < seg_len; ++i)
-	//	printf("%02.2hhx\n", *img++);
-	if (img && jpg)
-		;
-	return (img);
+	mcu->next = NULL;
+	return (bit_pos == 7 ? img : img + 1);
 }
 
 
@@ -364,57 +535,6 @@ unsigned char	*ud_img_fill_huff_table(ud_huff *table, size_t *table_index, unsig
 	return (img);
 }
 
-/*unsigned char	*ud_img_fill_huff_table(ud_huff *table, size_t *table_index, unsigned char *img, unsigned char *stage, size_t *nb_val)
-{
-	// ya UN PBBB
-	if (!*nb_val)
-		return (img);
-	if (*stage)
-	{
-
-		//actual->val = *img;
-		//actual->val_len = ud_img_get_byte_len(*img);
-		//actual->right_1 = NULL;
-		//actual->left_0 = NULL;
-		//
-		(*table_index)++;
-		table->left_0 = table + *table_index;
-		ud_img_create_end_huff(table + *table_index, img);
-		(*stage)--;
-		printf("new end index %zu stage before %d now %hhu val %hhx\n", *table_index, *stage + 1, *stage, *img);
-		++img;
-		(*table_index)++;
-		table->right_1 = table + *table_index;
-		(*nb_val)--;
-		if (!*nb_val)
-			return (img);
-		if (*stage)
-		{
-			ud_img_create_end_huff(table + *table_index, img);
-			(*stage)--;
-			printf("new end index %zu stage before %d now %hhu val %hhx\n", *table_index, *stage + 1, *stage, *img);
-			++img;
-			(*nb_val)--;
-		}
-		else
-			return (ud_img_fill_huff_table(table, table_index, img, stage + 1, nb_val));
-	//	printf("new end index %zu stage before %d now %hhu\n", *table_index, *stage + 1, *stage);
-		return (img);
-	}
-	if (!*stage)
-	{
-		//stage++;
-		printf("start recu index%zu\n", *table_index);
-		(*table_index)++;
-		table->left_0 = table + *table_index;
-		img = ud_img_fill_huff_table(table, table_index, img, stage + 1, nb_val);
-		(*table_index)++;
-		table->right_1 = table + *table_index;
-		img = ud_img_fill_huff_table(table, table_index, img, stage + 1,nb_val);
-	}
-	return (img);
-}*/
-
 void			ud_img_print_huff_table(ud_huff *table, int encrypt, int len)
 {
 	if (!table->left_0 && !table->right_1)
@@ -439,7 +559,7 @@ unsigned char	*ud_img_jpg_parse_huffman_table(unsigned char *img, ud_jpg *jpg)
 	printf("Define Huffman Table marker : seg len %d\n", seg_len);
 	//printf("%02.2hhx %02.2hhx %02.2hhx\n", *img, *(img + 1), *(img + 2));
 	ud_huff_class	table_class = (*(img + 2) >> 4) ? UD_HC_AC : UD_HC_DC;
-	unsigned char	table_id = (*(img + 2) & 0x0f); // maybe its bitwise comparison : 0000 = 0 0001 = 1 0010 = 2 0100 = 3... to verify
+	unsigned char	table_id = (*(img + 2) & 0x0f); // maybe it is bitwise comparison : 0000 = 0 0001 = 1 0010 = 2 0100 = 3... to verify
 	printf("Huff table[%hhd] class : %s\n", table_id, table_class == UD_HC_AC ? "AC" : "DC");
 	img += 18;
 	size_t			val_nbr = 0;
@@ -497,6 +617,8 @@ unsigned char	*ud_img_jpg_dct_ctr(unsigned char *img, ud_jpg *jpg, unsigned char
 	printf("data precision : %hhu bits\n", jpg->data_precision);
 	printf("img size : %hu*%hu pixels\n", jpg->img_width, jpg->img_height);
 	printf("component nbr = %hhu:\n", jpg->comp_nbr);
+	jpg->mcu_height = 8;
+	jpg->mcu_width = 8;
 	for (ud_ut_count i = 0; i < comp_nbr; ++i, ++comp_lst)
 	{
 		comp_lst->comp_id = *img++;
@@ -506,8 +628,13 @@ unsigned char	*ud_img_jpg_dct_ctr(unsigned char *img, ud_jpg *jpg, unsigned char
 		comp_lst->mcu_lst = NULL;
 		comp_lst->mcu_first = NULL;
 		comp_lst->dc_prev = 0;
+		if (comp_lst->hor_sampling * 8 > jpg->mcu_width)
+			jpg->mcu_width = comp_lst->hor_sampling * 8;
+		if (comp_lst->ver_sampling * 8 > jpg->mcu_height)
+			jpg->mcu_height = comp_lst->ver_sampling * 8;
 		printf("\tcomp[%hhu] :\n\t\t horizontal sampling : %hhu\n\t\t vertical sampling : %hhu\n\t\t quant mat associed : %hhu\n", comp_lst->comp_id, comp_lst->hor_sampling, comp_lst->ver_sampling, comp_lst->quant_mat_id);
 	}
+	printf("mcu size : %hux%hu px\n", jpg->mcu_width, jpg->mcu_height);
 	return (img);
 	
 }
@@ -663,7 +790,7 @@ unsigned char	*ud_img_jpg_parse_quantization_mat(unsigned char *img, ud_jpg *jpg
 		unsigned char	mat_id = (*img & 0xf) % 4; // maybe its bitwise comparison : 0000 = 0 0001 = 1 0010 = 2 0100 = 3... to verify
 		printf("table[%hhu] : nbr bytes : %hhu\n", mat_id, nbr_bytes);
 		new_mat = ud_img_create_new_quant_mat(&(jpg->quantization_mat), nbr_bytes);
-		char	***quant_mat_list = (char ***)jpg->quantization_mat->val;
+		//char	***quant_mat_list = (char ***)jpg->quantization_mat->val;
 		++img;
 		img = ud_img_parse_zig_zag(new_mat, img, (size_t)size_b, (size_t)size_b);
 		seg_len -= (nbr_bytes + 1);
@@ -674,9 +801,9 @@ unsigned char	*ud_img_jpg_parse_quantization_mat(unsigned char *img, ud_jpg *jpg
 			if (!(++i % size_b))
 				printf("\n");
 		}
-		if (quant_mat_list[mat_id])
-			ud_img_free_quant_mat(quant_mat_list[mat_id]);
-		quant_mat_list[mat_id] = new_mat;
+		//if (quant_mat_list[mat_id])
+		//	ud_img_free_quant_mat(quant_mat_list[mat_id]);
+		//quant_mat_list[mat_id] = new_mat;
 	}
 	return (img);
 }
@@ -721,6 +848,7 @@ unsigned char	*ud_img_jpg_read_segment(unsigned char *img, ud_jpg *jpg)
 	else if (*img == UD_IMG_JPG_DRI)
 		printf("UD IMG JPG DRI : %02.2hhx\n", *img);
 	else if (*img == UD_IMG_JPG_SOS)
+		//return (img + 1);
 		return (ud_img_jpg_scan_file(img + 1, jpg));
 	else if (*img >= UD_IMG_JPG_RST_MIN && *img <= UD_IMG_JPG_RST_MAX)
 		printf("UD IMG JPG RST : %02.2hhx\n", *img);
@@ -752,27 +880,81 @@ ud_jpg		ud_img_init_jpg_struct(void)
 	jpg.dc_huff_tables[1] = NULL;
 	jpg.dc_huff_tables[2] = NULL;
 	jpg.dc_huff_tables[3] = NULL;
+	jpg.mcu_lst = NULL;
 	return (jpg);
 }
 
-int		**ud_img_decryption_jpg_to_rgb(unsigned char *img)
+ud_img		*ud_img_jpg_build_image(ud_jpg *jpg)
+{
+	ud_img				*img;
+	ud_mcu				*mcu = jpg->mcu_lst;
+	ud_mcu				*save = mcu;
+	//ud_img_pix_ycbcr	pixel;
+	ud_img_pix_ycbcr	*pixels;
+
+	ud_ut_prot_malloc(img = ud_ut_malloc(sizeof(ud_img)));
+	img->color_space = UD_CS_YCBCR;
+	img->pixels = ud_arr_init(ud_img_pix_ycbcr, jpg->img_height * jpg->img_width);
+	img->width = jpg->img_width;
+	img->height = jpg->img_height;
+	pixels = (ud_img_pix_ycbcr*)img->pixels->val;
+	ud_ut_count	mcu_row = 0;
+	while (mcu)
+	{
+		for (ud_ut_count i = 0; i < img->height; ++i)
+		{
+			for (ud_ut_count j = 0; j < img->width;)
+			{
+				for (ud_ut_count mcu_col = 0; mcu_col < jpg->mcu_width && j < img->width; ++mcu_col, ++j, ++pixels)
+				{
+					pixels->luminance = mcu->val[0][mcu_row][mcu_col];
+					pixels->chroma_blue = mcu->val[1][mcu_row][mcu_col];
+					pixels->chroma_red = mcu->val[2][mcu_row][mcu_col];
+				}
+				if (j == img->width)
+				{
+					++mcu_row;
+					if (mcu_row == jpg->mcu_height || i + 1 == jpg->img_height)
+					{
+						mcu = mcu->next;
+						save = mcu;
+						mcu_row = 0;
+					}
+					else
+						mcu = save;
+				}
+				else
+					mcu = mcu->next;
+			}
+		
+		}
+	}
+	return (img);
+}
+
+ud_img		*ud_img_decryption_jpg_to_rgb(unsigned char *img_str)
 {
 	ud_jpg	jpg;
-	int		**rgb = NULL;
+	ud_img	*img;
 
 	jpg = ud_img_init_jpg_struct();
-	unsigned char	*svae = img;
+//	unsigned char	*svae = img_str;
 	
-	while (ud_img_jpg_check_marker_start(*img))
+	while (ud_img_jpg_check_marker_start(*img_str))
 	{
-		unsigned char	*img_ptr = img;
-		img = ud_img_jpg_read_segment(++img, &jpg);
-		img = ud_img_jpg_read_segment(++img, &jpg);
+		unsigned char	*img_ptr = img_str;
+		++img_str;
+		img_str = ud_img_jpg_read_segment(img_str, &jpg);
+		//img_str = ud_img_jpg_read_segment(++img_str, &jpg);
 		if (*(img_ptr + 1) == 0xda)
-			printf("size of frame %ld\n", img - img_ptr);
+			printf("size of frame %ld\n", img_str - img_ptr);
 	}
-	printf("%d\n", (int)(img - svae));
-	unsigned char	*img_ptr = img;
+	img = ud_img_jpg_build_image(&jpg);
+	mlx_print_this_shit(img);
+	/*printf("%d\n", (int)(img - svae));
+	printf("%02.2hhx ", *img);
+	exit(0);
+	//unsigned char	*img_ptr = img;
 	while (*img != 0xff || *(img + 1) != 0xd9)
 	{
 	//	++img;
@@ -793,8 +975,8 @@ int		**ud_img_decryption_jpg_to_rgb(unsigned char *img)
 		else
 			++img;
 			//printf("%hhx\n", *(img + 1));
-	}
-	printf("\n");
-	printf("%d\n", (int)(img - svae));
-	return (rgb);
+	}*/
+	//printf("\n");
+	//printf("%d\n", (int)(img - svae));
+	return (img);
 }
