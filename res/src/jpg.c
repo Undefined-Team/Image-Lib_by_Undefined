@@ -101,7 +101,7 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned 
 		}
 		unsigned char zero_run = ((table->val >> 4) & 0xf);
 		unsigned char category = table->val & 0xf;
-		//printf("\nzero run %hhu AC categorie %hhu\n", zero_run, category);
+		printf("zero run %hhu AC categorie %hhu\n", zero_run, category);
 		if (table->val == 0x00)
 		{
 			for (; zz_index != 64; ++zz_index)
@@ -183,7 +183,8 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 							0xfff0, 0xffe0, 0xffc0, 0xff80,
 							0xff00, 0xfe00, 0xfc00, 0xf800,
 							0xf000, 0xe000, 0xc000, 0x8000};
-
+	//8
+	//1111 10    00101111 10
 	//printf("first char %hhu scnd %hhu thrd %hhu table addr %p\n", *img, *(img + 1), *(img + 2), table);
 	while (table->right_1 || table->left_0)
 	{
@@ -210,7 +211,7 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 			--(*bit_pos);
 	}
 	unsigned char category = table->val;
-	//printf("\nDC categorie %hhx (zero count : %d)\n", table->val, table->val >> 4);
+	printf("DC categorie %hhx (zero count : %d)\n", table->val, table->val >> 4);
 	short diff_val = ((*img >> *bit_pos) & 1) ? 0 : neg_mask[category]; //pk ??
 	/*if (!*bit_pos)
 	{
@@ -220,7 +221,6 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 	else
 		--(*bit_pos);
 	*///--category;//a changer
-	//printf("diff value = %hd\n", diff_val);
 	//if (table->val == 0x00)
 	//	*check_eob = 1;
 	for (int i = category - 1; i >= 0; --i)
@@ -245,6 +245,7 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned 
 	}
 	if (diff_val < 0)
 		++diff_val; // bitstream wtf 0 logique
+	printf("diff value = %hd dc_prev %d\n", diff_val, *dc_prev);
 //	printf("\ndiff value = %hd\n", diff_val);
 	
 	channel_val[0][0] = *dc_prev + diff_val;
@@ -281,14 +282,14 @@ double ud_cos(double x)
 	return s;
 }
 */
-void			ud_img_jpg_dequantize_mat(int channel_val[8][8], char **quant_mat)
+void			ud_img_jpg_dequantize_mat(int channel_val[8][8], unsigned char **quant_mat)
 {
-	printf("dequantized mat\n");
+	printf("dequantized mat 00 = %d %hhd\n", channel_val[0][0], quant_mat[0][0]);
 	for (ud_ut_count i = 0; i < 8; ++i)
 	{
 		for (ud_ut_count j = 0; j < 8; ++j)
 		{
-			channel_val[i][j] *= quant_mat[i][j];
+			channel_val[i][j] *= (int)(quant_mat[i][j]);
 			printf("%-4d ", channel_val[i][j]);
 		}
 		printf("\n");
@@ -307,14 +308,21 @@ void			ud_img_jpg_compute_idct(int channel_val[8][8], int idct_val[8][8])
 			{
 				for (ud_ut_count v = 0; v < 8; ++v)
 				{
-					float Cu = u == 0 ? UD_M_1SQRT2 : 1.0;
-					float Cv = v == 0 ? UD_M_1SQRT2 : 1.0;
-					sum += Cu * Cv * (double)channel_val[u][v] * cos((2 * x + 1) * u * UD_M_PI / 16.0) * cos((2 * y + 1) * v * UD_M_PI / 16.0);
+					double Cu = u == 0 ? UD_M_1SQRT2 : 1.0;
+					double Cv = v == 0 ? UD_M_1SQRT2 : 1.0;
+					double Svu = channel_val[v][u];
+					double cos_x_param = (2 * x + 1) * u;
+					cos_x_param *= UD_M_PI_16;
+					double cos_y_param = (2 * y + 1) * v;
+					cos_y_param *= UD_M_PI_16;
+				//	printf("Cu %f Cv %f channel_val[%zu][%zu] %d (2 * x + 1) * u * pi/16 : %f //y %f")
+				//	printf("Cu %f Cv %f channel_val[%zu][%zu] %d (2 * x + 1) * u * pi/16 : %f //y %f")
+					sum += Cu * Cv * Svu * cos(cos_x_param) * cos(cos_y_param);
 				}
 			}
-			sum = sum / 4.0 + 128;
-			idct_val[x][y] = ud_prot_overflow(ud_round(sum));// y, x ??---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-			//printf("sum : %f, idct[%zu][%zu] = %d\n", sum, x, y, idct_val[x][y]);
+			sum = sum / 4.0 + 128 ;
+			idct_val[y][x] = ud_prot_overflow(ud_round(sum));// y, x ??---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			//printf("sum : %f, idct[%zu][%zu] = %d\n", sum, y, x, idct_val[y][x]);
 		}
 	
 	}
@@ -376,7 +384,7 @@ unsigned char	*ud_img_jpg_parse_mcu(ud_jpg_comp *comp, ud_jpg *jpg, unsigned cha
 	//if (!mcu->val[0][0])
 	//if (!check_eob)
 	img = ud_img_parse_ac_mcu(comp->ac_table, img, bit_pos, channel_val);
-	ud_img_jpg_dequantize_mat(channel_val, ((char ***)jpg->quantization_mat->val)[comp->quant_mat_id]);
+	ud_img_jpg_dequantize_mat(channel_val, ((unsigned char ***)jpg->quantization_mat->val)[comp->quant_mat_id]);
 	ud_img_jpg_compute_idct(channel_val, idct_val);
 	ud_img_jpg_reverse_downsampling(channel, idct_val, comp, jpg, chan_off);
 	return (img);
@@ -884,6 +892,15 @@ ud_jpg		ud_img_init_jpg_struct(void)
 	return (jpg);
 }
 
+unsigned char	clip_pixel(int val)
+{
+	if (val > 255)
+		return (255);
+	if (val < 0)
+		return (0);
+	return ((unsigned char)val);
+}
+
 ud_img		*ud_img_jpg_build_image(ud_jpg *jpg)
 {
 	ud_img				*img;
@@ -907,9 +924,9 @@ ud_img		*ud_img_jpg_build_image(ud_jpg *jpg)
 			{
 				for (ud_ut_count mcu_col = 0; mcu_col < jpg->mcu_width && j < img->width; ++mcu_col, ++j, ++pixels)
 				{
-					pixels->luminance = mcu->val[0][mcu_row][mcu_col];
-					pixels->chroma_blue = mcu->val[1][mcu_row][mcu_col];
-					pixels->chroma_red = mcu->val[2][mcu_row][mcu_col];
+					pixels->luminance = clip_pixel(mcu->val[0][mcu_row][mcu_col]);
+					pixels->chroma_blue = clip_pixel(mcu->val[1][mcu_row][mcu_col]);
+					pixels->chroma_red = clip_pixel(mcu->val[2][mcu_row][mcu_col]);
 				}
 				if (j == img->width)
 				{

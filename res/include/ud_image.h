@@ -9,6 +9,7 @@
 // Macro
 # define UD_M_1SQRT2			0.70710678118
 # define UD_M_PI				3.14159265359
+# define UD_M_PI_16				0.19634954084
 # define UD_IMG_JPG_SOI			0xd8		// Start Of Image JPEG FILE EXTENSION
 # define UD_IMG_JPG_SOF_BD		0xc0		// Start Of Frame (Baseline DCT)
 # define UD_IMG_JPG_SOF_PD		0xc2		// Start Of Frame (Progressive DCT)
@@ -31,7 +32,8 @@
 # define UD_IMG_SVG_SIGN_2		0x6c		// SVG Signature Pt 2
 
 # define ud_img_jpg_check_marker_start(unsigned_char)		unsigned_char == 0xff ? 1 : 0
-# define ud_round(float_val)								float_val < float_val - 0.5 ? float_val + 1 : float_val
+//# define ud_round(float_val)								float_val - (int)float_val > 0.5 ? float_val + 1 : float_val
+# define ud_round(float_val)								float_val
 # define ud_prot_overflow(val)								val > 255 ? 255 : val
 // Structures
 
