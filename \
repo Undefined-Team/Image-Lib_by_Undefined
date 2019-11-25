@@ -3,17 +3,20 @@
 
 ud_density_unit	ud_img_jpg_get_density_unit(unsigned char density)
 {
-	if (density == 1) return (UD_DU_JPG_PBINCH);
-	if (density == 2) return (UD_DU_JPG_PBCM);
+	if (density == 1)
+		return (UD_DU_JPG_PBINCH);
+	if (density == 2)
+		return (UD_DU_JPG_PBCM);
 	return (UD_DU_JPG_UNKNOWN);
 }
 
 unsigned char	ud_img_get_quant_bit_id(unsigned char id_b)
 {
 	unsigned char	id = 0;
-
-	if (!id_b) return (0);
-	while (!((id_b >> id) & 1)) ++id;
+	if (!id_b)
+		return (0); // not sure ..
+	while (!((id_b >> id)& 1))
+		++id;
 	return (id);
 }
 
@@ -49,76 +52,57 @@ void			ud_img_zz_assign(int val[8][8], int zz_pos, int new_val)
 						5, 6, 7,
 						7, 6,
 						7};
+
+	//printf("val[%d][%d] = %d : zz_pos : %d\n", row[zz_pos], col[zz_pos], new_val, zz_pos);
 	val[row[zz_pos]][col[zz_pos]] = new_val;
 }
 
 ud_jpg_comp		*ud_img_jpg_assign_huff_tables(ud_jpg_comp *components, unsigned char comp_id, unsigned char dc_hf_id, unsigned char ac_hf_id, ud_jpg *jpg)
 {
-	while (components->comp_id != comp_id) ++components;
+	while (components->comp_id != comp_id)
+		++components;
 	components->ac_table = jpg->ac_huff_tables[ac_hf_id];
 	components->dc_table = jpg->dc_huff_tables[dc_hf_id];
 	return (components);
 }
 
-void			ud_img_jpg_reset_dc_prev(ud_jpg_comp *components, unsigned char comp_nbr)
-{
-	for (ud_ut_count i = 0; i < comp_nbr; ++i, ++components)
-		components->dc_prev = 0;
-}
-
-unsigned char	*ud_img_jpg_read_huff_table(ud_huff *table, char *bit_pos, unsigned char *img, ud_jpg *jpg, unsigned char *huff_val)
-{
-	while (table->right_1 || table->left_0)
-	{
-		if (*bit_pos == 7)
-		{
-			if (*img == 0xff)
-			{
-				if (*(img + 1) >= 0xd0 && *(img + 1) <= 0xd7)
-				{
-					ud_img_jpg_reset_dc_prev(jpg->components, jpg->comp_nbr);
-					img += 2;
-				}
-			}
-		}
-		if ((*img >> *bit_pos) & 1)
-			table = table->right_1;
-		else
-			table = table->left_0;
-		if (!*bit_pos)
-		{
-			*bit_pos = 7;
-			++img;
-			if (*(img - 1) == 0xff)
-			{
-				if (!*img)
-					img++;
-				else
-					printf("marker found : %hhx\n", *img);//parse marker etc
-			}
-		}
-		else
-			--(*bit_pos);
-	}
-	*huff_val = table->val;
-	return (img);
-}
-
-unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, char *bit_pos, int channel_val[8][8], ud_jpg *jpg)
+unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos, int channel_val[8][8])
 {
 	short	neg_mask[16] = {0xffff, 0xfffe, 0xfffc, 0xfff8,
 							0xfff0, 0xffe0, 0xffc0, 0xff80,
 							0xff00, 0xfe00, 0xfc00, 0xf800,
 							0xf000, 0xe000, 0xc000, 0x8000};
 	size_t	zz_index = 1;
-	unsigned char	huff_val;
+	ud_huff *save = table;
 	while (1)
 	{
-		img = ud_img_jpg_read_huff_table(table, bit_pos, img, jpg, &huff_val);
-		unsigned char zero_run = ((huff_val >> 4) & 0xf);
-		unsigned char category = huff_val & 0xf;
+		table = save;
+		while (table->right_1 || table->left_0)
+		{
+		//	printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
+			if ((*img >> *bit_pos) & 1)
+				table = table->right_1;
+			else
+				table = table->left_0;
+			if (!*bit_pos)
+			{
+				*bit_pos = 7;
+				++img;
+				if (*(img - 1) == 0xff)
+				{
+					if (!*img)
+						img++;
+					else
+						printf("marker found : %hhx\n", *img);//parse marker etc
+				}
+			}
+			else
+				--(*bit_pos);
+		}
+		unsigned char zero_run = ((table->val >> 4) & 0xf);
+		unsigned char category = table->val & 0xf;
 		printf("zero run %hhu AC categorie %hhu\n", zero_run, category);
-		if (huff_val == 0x00)
+		if (table->val == 0x00)
 		{
 			for (; zz_index != 64; ++zz_index)
 				ud_img_zz_assign(channel_val, zz_index, 0);
@@ -150,18 +134,6 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, char *bit
 		for (int i = category - 1; i >= 0; --i)
 		{
 		//	printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
-			if (*bit_pos == 7)
-			{
-				if (*img == 0xff)
-				{
-					if (*(img + 1) >= 0xd0 && *(img + 1) <= 0xd7)
-					{
-						img += 2;
-						ud_img_jpg_reset_dc_prev(jpg->components, jpg->comp_nbr);
-					}
-				}
-			}
-
 			if (((*img >> *bit_pos) & 1))
 				val |= (1 << i);
 			if (!*bit_pos)
@@ -205,7 +177,7 @@ unsigned char	*ud_img_parse_ac_mcu(ud_huff *table, unsigned char *img, char *bit
 	return (img);
 }
 
-unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, char *bit_pos, int channel_val[8][8], int *dc_prev, ud_jpg *jpg)//, int *check_eob)
+unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, unsigned char *bit_pos, int channel_val[8][8], int *dc_prev)//, int *check_eob)
 {
 	short	neg_mask[16] = {0xffff, 0xfffe, 0xfffc, 0xfff8,
 							0xfff0, 0xffe0, 0xffc0, 0xff80,
@@ -214,23 +186,11 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, char *bit
 	//8
 	//1111 10    00101111 10
 	//printf("first char %hhu scnd %hhu thrd %hhu table addr %p\n", *img, *(img + 1), *(img + 2), table);
-	printf("b pos %hhu, %02.2hhx:%02.2hhx\n", *bit_pos ,*img, *(img + 1));
 	while (table->right_1 || table->left_0)
 	{
 		//printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
 		//char c = ((*img >> *bit_pos) & 1) + '0';
 		//write(1, &c, 1);
-		if (*bit_pos == 7)
-		{
-			if (*img == 0xff)
-			{
-				if (*(img + 1) >= 0xd0 && *(img + 1) <= 0xd7)
-				{
-					img += 2;
-					ud_img_jpg_reset_dc_prev(jpg->components, jpg->comp_nbr);
-				}
-			}
-		}
 		if ((*img >> *bit_pos) & 1)
 			table = table->right_1;
 		else
@@ -266,17 +226,6 @@ unsigned char	*ud_img_parse_dc_mcu(ud_huff *table, unsigned char *img, char *bit
 	for (int i = category - 1; i >= 0; --i)
 	{
 	//	printf("%c", ((*img >> *bit_pos) & 1) ? '1': '0');
-		if (*bit_pos == 7)
-		{
-			if (*img == 0xff)
-			{
-				if (*(img + 1) >= 0xd0 && *(img + 1) <= 0xd7)
-				{
-					img += 2;
-					ud_img_jpg_reset_dc_prev(jpg->components, jpg->comp_nbr);
-				}
-			}
-		}
 		if (((*img >> *bit_pos) & 1))
 			diff_val |= (1 << i);
 		if (!*bit_pos)
@@ -366,6 +315,8 @@ void			ud_img_jpg_compute_idct(int channel_val[8][8], int idct_val[8][8])
 					cos_x_param *= UD_M_PI_16;
 					double cos_y_param = (2 * y + 1) * v;
 					cos_y_param *= UD_M_PI_16;
+				//	printf("Cu %f Cv %f channel_val[%zu][%zu] %d (2 * x + 1) * u * pi/16 : %f //y %f")
+				//	printf("Cu %f Cv %f channel_val[%zu][%zu] %d (2 * x + 1) * u * pi/16 : %f //y %f")
 					sum += Cu * Cv * Svu * cos(cos_x_param) * cos(cos_y_param);
 				}
 			}
@@ -407,13 +358,32 @@ void			ud_img_jpg_reverse_downsampling(int **channel, int idct_val[8][8], ud_jpg
 }
 
 
-unsigned char	*ud_img_jpg_parse_mcu(ud_jpg_comp *comp, ud_jpg *jpg, unsigned char *img, char *bit_pos, int **channel, size_t chan_off)
+unsigned char	*ud_img_jpg_parse_mcu(ud_jpg_comp *comp, ud_jpg *jpg, unsigned char *img, unsigned char *bit_pos, int **channel, size_t chan_off)
 {
+	if (jpg && channel && chan_off)
+		;
+	//ud_mcu	*mcu;
 	static int	channel_val[8][8];
 	static int	idct_val[8][8];
+//	int		check_eob = 0;
 
-	img = ud_img_parse_dc_mcu(comp->dc_table, img, bit_pos, channel_val, &(comp->dc_prev), jpg);//, &check_eob);
-	img = ud_img_parse_ac_mcu(comp->ac_table, img, bit_pos, channel_val, jpg);
+	/*if (!comp->mcu_lst)
+	{
+		ud_ut_prot_malloc(comp->mcu_lst = ud_ut_malloc(sizeof(ud_mcu)));
+		comp->mcu_first = comp->mcu_lst;
+	}
+	else
+	{
+		ud_ut_prot_malloc(comp->mcu_lst->next = ud_ut_malloc(sizeof(ud_mcu)));
+		comp->mcu_lst = comp->mcu_lst->next;
+	}*/
+	//mcu = comp->mcu_lst;
+	//ud_ut_prot_malloc(mcu->val = ud_ut_malloc(sizeof(int *) * 8));
+	//for (ud_ut_count i = 0; i < 8; ++i) ud_ut_prot_malloc(mcu->val[i] = ud_ut_malloc(sizeof(int) * 8));
+	img = ud_img_parse_dc_mcu(comp->dc_table, img, bit_pos, channel_val, &(comp->dc_prev));//, &check_eob);
+	//if (!mcu->val[0][0])
+	//if (!check_eob)
+	img = ud_img_parse_ac_mcu(comp->ac_table, img, bit_pos, channel_val);
 	ud_img_jpg_dequantize_mat(channel_val, ((unsigned char ***)jpg->quantization_mat->val)[comp->quant_mat_id]);
 	ud_img_jpg_compute_idct(channel_val, idct_val);
 	ud_img_jpg_reverse_downsampling(channel, idct_val, comp, jpg, chan_off);
@@ -446,7 +416,7 @@ unsigned char	*ud_img_jpg_scan_file(unsigned char *img, ud_jpg *jpg)
 	unsigned char	succ_approx = *img++;
 
 	printf("spectral start %hhu spectral end %hhu successive approximation %hhu (not used )\n", spec_start, spec_end, succ_approx);
-	char	bit_pos = 7;
+	unsigned char	bit_pos = 7;
 	//int ind = 0;
 	size_t			mcu_nbr = jpg->img_width / jpg->mcu_width;
 	if (jpg->img_width % jpg->mcu_width)
@@ -492,12 +462,6 @@ unsigned char	*ud_img_jpg_scan_file(unsigned char *img, ud_jpg *jpg)
 
 		}
 		prev = mcu;
-		if (jpg->restart_interval && !((z + 1) % jpg->mcu_by_interval) && bit_pos != 7)
-		{
-			printf("RESTART !! %02.2hhx %02.2hhx %02.2hhx\n", *img, *(img + 1), *(img + 2));
-			bit_pos = 7;
-			++img;
-		}
 	}
 	mcu->next = NULL;
 	return (bit_pos == 7 ? img : img + 1);
@@ -600,53 +564,49 @@ void			ud_img_print_huff_table(ud_huff *table, int encrypt, int len)
 unsigned char	*ud_img_jpg_parse_huffman_table(unsigned char *img, ud_jpg *jpg)
 {
 	unsigned short	seg_len = ((((unsigned short)*img) << 8) | (unsigned short)*(img + 1));
-	printf("Define Huffman Table(s) marker : seg len %d\n", seg_len);
-	unsigned short	index = 2;
-	img += 2;
-	//seg_len -= 2;
-	while (index < seg_len)
+	printf("Define Huffman Table marker : seg len %d\n", seg_len);
+	//unsigned short	index = 0;
+	//whiel ()
+	//printf("%02.2hhx %02.2hhx %02.2hhx\n", *img, *(img + 1), *(img + 2));
+	ud_huff_class	table_class = (*(img + 2) >> 4) ? UD_HC_AC : UD_HC_DC;
+	unsigned char	table_id = (*(img + 2) & 0x0f); // maybe it is bitwise comparison : 0000 = 0 0001 = 1 0010 = 2 0100 = 3... to verify
+	printf("Huff table[%hhd] class : %s\n", table_id, table_class == UD_HC_AC ? "AC" : "DC");
+	img += 18;
+	size_t			val_nbr = 0;
+	size_t			huff_table_size = ud_img_get_huff_table_size(img++, &val_nbr);
+	ud_huff			*table;
+	size_t			actual_index = 0;
+	//size_t			size_index = *(img - 16);
+	unsigned char	*stage = (unsigned char *)ud_str_ndup((char *)(img - 16), 16);
+//	if (stage)
+//		;
+   	if (table_class == UD_HC_AC)
 	{
-		//printf("%02.2hhx %02.2hhx %02.2hhx\n", *img, *(img + 1), *(img + 2));
-		ud_huff_class	table_class = (*img >> 4) ? UD_HC_AC : UD_HC_DC;
-		unsigned char	table_id = (*img & 0x0f); // maybe it is bitwise comparison : 0000 = 0 0001 = 1 0010 = 2 0100 = 3... to verify
-		printf("Huff table[%hhd] class : %s\n", table_id, table_class == UD_HC_AC ? "AC" : "DC");
-		img += 16;
-		size_t			val_nbr = 0;
-		size_t			huff_table_size = ud_img_get_huff_table_size(img++, &val_nbr);
-		size_t			val_nbr_cpy = val_nbr;
-		ud_huff			*table;
-		size_t			actual_index = 0;
-		//size_t			size_index = *(img - 16);
-		unsigned char	*stage = (unsigned char *)ud_str_ndup((char *)(img - 16), 16);
-	//	if (stage)
-	//		;
-	   	if (table_class == UD_HC_AC)
-		{
-			ud_ut_prot_malloc(jpg->ac_huff_tables[table_id] = ud_ut_malloc(sizeof(ud_huff) * huff_table_size));
-			table = jpg->ac_huff_tables[table_id];
-		}
-		else
-		{
-			ud_ut_prot_malloc(jpg->dc_huff_tables[table_id] = ud_ut_malloc(sizeof(ud_huff) * huff_table_size));
-			table = jpg->dc_huff_tables[table_id];
-		}
-		// if table != NULL free ??
-		printf("size : %zu val _nbr %zu\n", huff_table_size, val_nbr);
-		ud_img_fill_huff_table(table, &actual_index, img, stage, &val_nbr);
-	
-		ud_img_print_huff_table(table, 0, 0);
-		
-		index += 17;
-		img -= 16;
-		printf("stage outs bytes : ");
-		for (ud_ut_count i = 0; i < 16; ++i, ++img)
-			printf("%02.2hhx ", *img);
-		printf("\nvalues : ");
-		for (ud_ut_count i = 0; i < val_nbr_cpy; ++i, ++img, ++index)
-			printf("%02.2hhx ", *img);
-		printf("\n");
-		//index = seg_len;
+		ud_ut_prot_malloc(jpg->ac_huff_tables[table_id] = ud_ut_malloc(sizeof(ud_huff) * huff_table_size));
+		table = jpg->ac_huff_tables[table_id];
 	}
+	else
+	{
+		ud_ut_prot_malloc(jpg->dc_huff_tables[table_id] = ud_ut_malloc(sizeof(ud_huff) * huff_table_size));
+		table = jpg->dc_huff_tables[table_id];
+	}
+	// if table != NULL free ??
+	printf("size : %zu val _nbr %zu\n", huff_table_size, val_nbr);
+	ud_img_fill_huff_table(table, &actual_index, img, stage, &val_nbr);
+
+	ud_img_print_huff_table(table, 0, 0);
+	
+	seg_len -= 19;
+	img -= 16;
+	printf("stage outs bytes : ");
+	for (ud_ut_count i = 0; i < 16; ++i, ++img)
+		printf("%02.2hhx ", *img);
+	printf("\nvalues : ");
+	for (ud_ut_count i = 0; i < seg_len; ++i, ++img)
+		printf("%02.2hhx ", *img);
+	printf("\n");
+	if (jpg)
+		;
 	return (img);
 }
 
@@ -883,40 +843,10 @@ unsigned char	*ud_img_jpg_app_ctr(unsigned char *img, ud_jpg *jpg, unsigned char
 	return (img + seg_len);
 }
 
-unsigned char *ud_img_jpg_skip_com(unsigned char *img)
-{
-	unsigned short	seg_len = ((((unsigned short)*img) << 8) | (unsigned short)*(img + 1));
-	printf("Comment marker: \"%.*s\"\n", seg_len - 2, img + 2);
-	return (img + seg_len);
-}
-
-unsigned char *ud_img_jpg_restart_interval_ctr(unsigned char *img, ud_jpg *jpg)
-{
-	unsigned short	seg_len = ((((unsigned short)*img) << 8) | (unsigned short)*(img + 1));
-	jpg->mcu_by_interval = ((((unsigned short)*(img + 2)) << 8) | (unsigned short)*(img + 3));
-	jpg->restart_interval = 1;
-	printf("Restart Interval marker: seg_len (should be 4) : %hu\n\t\tmcu_by_interval : %hu\n", seg_len, jpg->mcu_by_interval);
-	if (!jpg->mcu_by_interval)
-		jpg->restart_interval = 0;
-	return (img + seg_len);
-}
-
-unsigned char	*ud_img_jpg_end_of_image(unsigned char *img)
-{
-	printf("End Of Image marker\n");
-	return (img);
-}
-
-unsigned char	*ud_img_jpg_start_of_image(unsigned char *img)
-{
-	printf("Start Of Image marker\n");
-	return (img);
-}
-
 unsigned char	*ud_img_jpg_read_segment(unsigned char *img, ud_jpg *jpg)
 {
 	if (*img == UD_IMG_JPG_SOI)
-		return (ud_img_jpg_start_of_image(img + 1));
+		return (img + 1);
 	else if (*img == UD_IMG_JPG_SOF_BD)
 		return (ud_img_jpg_dct_ctr(img + 1, jpg, UD_IMG_JPG_SOF_BD));
 	else if (*img == UD_IMG_JPG_SOF_PD)
@@ -926,23 +856,24 @@ unsigned char	*ud_img_jpg_read_segment(unsigned char *img, ud_jpg *jpg)
 	else if (*img == UD_IMG_JPG_DQT)
 		return (ud_img_jpg_parse_quantization_mat(img + 1, jpg));
 	else if (*img == UD_IMG_JPG_DRI)
-		return (ud_img_jpg_restart_interval_ctr(img + 1, jpg));
+		printf("UD IMG JPG DRI : %02.2hhx\n", *img);
 	else if (*img == UD_IMG_JPG_SOS)
+		//return (img + 1);
 		return (ud_img_jpg_scan_file(img + 1, jpg));
 	else if (*img >= UD_IMG_JPG_RST_MIN && *img <= UD_IMG_JPG_RST_MAX)
-		return (img + 1);
+		printf("UD IMG JPG RST : %02.2hhx\n", *img);
 	else if (*img >= UD_IMG_JPG_APP_MIN && *img <= UD_IMG_JPG_APP_MAX)
 		return (ud_img_jpg_app_ctr(img + 1, jpg, (*img & 0x0f)));
 	else if (*img == UD_IMG_JPG_COM)
-		return (ud_img_jpg_skip_com(img + 1));
+		printf("UD IMG JPG COM : %02.2hhx\n", *img);
 	else if (*img == UD_IMG_JPG_EOI)
-		return (ud_img_jpg_end_of_image(img + 1));
+		printf("UD IMG JPG EOI : %02.2hhx\n", *img);
 	else
-	{
 		printf("UNDEFINE SEG:%02.2hhx\n", *img);
-		exit(EXIT_FAILURE);
-	}
+//	printf("%hhx\n", *img);
 	return (img + 1);
+
+
 }
 
 ud_jpg		ud_img_init_jpg_struct(void)
@@ -951,20 +882,24 @@ ud_jpg		ud_img_init_jpg_struct(void)
 
 	jpg.quantization_mat = NULL;
 	jpg.thumbnail = NULL;
-	for (ud_ut_count i = 0; i < UD_IMG_MAX_HUFFTABLE; ++i)
-	{
-		jpg.ac_huff_tables[i] = NULL;
-		jpg.dc_huff_tables[i] = NULL;
-	}
+	jpg.ac_huff_tables[0] = NULL;
+	jpg.ac_huff_tables[1] = NULL;
+	jpg.ac_huff_tables[2] = NULL;
+	jpg.ac_huff_tables[3] = NULL;
+	jpg.dc_huff_tables[0] = NULL;
+	jpg.dc_huff_tables[1] = NULL;
+	jpg.dc_huff_tables[2] = NULL;
+	jpg.dc_huff_tables[3] = NULL;
 	jpg.mcu_lst = NULL;
-	jpg.restart_interval = 0;
 	return (jpg);
 }
 
 unsigned char	clip_pixel(int val)
 {
-	if (val > 255) return (255);
-	if (val < 0) return (0);
+	if (val > 255)
+		return (255);
+	if (val < 0)
+		return (0);
 	return ((unsigned char)val);
 }
 
@@ -992,14 +927,8 @@ ud_img		*ud_img_jpg_build_image(ud_jpg *jpg)
 				for (ud_ut_count mcu_col = 0; mcu_col < jpg->mcu_width && j < img->width; ++mcu_col, ++j, ++pixels)
 				{
 					pixels->luminance = clip_pixel(mcu->val[0][mcu_row][mcu_col]);
-					if (jpg->comp_nbr > 1)
-						pixels->chroma_blue = clip_pixel(mcu->val[1][mcu_row][mcu_col]);
-					else
-						pixels->chroma_blue = 0;
-					if (jpg->comp_nbr > 2)
-						pixels->chroma_red = clip_pixel(mcu->val[2][mcu_row][mcu_col]);
-					else
-						pixels->chroma_red = 0;
+					pixels->chroma_blue = clip_pixel(mcu->val[1][mcu_row][mcu_col]);
+					pixels->chroma_red = clip_pixel(mcu->val[2][mcu_row][mcu_col]);
 				}
 				if (j == img->width)
 				{
@@ -1019,7 +948,6 @@ ud_img		*ud_img_jpg_build_image(ud_jpg *jpg)
 		
 		}
 	}
-	img->comp_nbr = jpg->comp_nbr;
 	return (img);
 }
 
@@ -1029,15 +957,45 @@ ud_img		*ud_img_decryption_jpg_to_rgb(unsigned char *img_str)
 	ud_img	*img;
 
 	jpg = ud_img_init_jpg_struct();
+//	unsigned char	*svae = img_str;
+	
 	while (ud_img_jpg_check_marker_start(*img_str))
 	{
 		unsigned char	*img_ptr = img_str;
-		//++img_str;
-		img_str = ud_img_jpg_read_segment(img_str + 1, &jpg);
+		++img_str;
+		img_str = ud_img_jpg_read_segment(img_str, &jpg);
+		//img_str = ud_img_jpg_read_segment(++img_str, &jpg);
 		if (*(img_ptr + 1) == 0xda)
 			printf("size of frame %ld\n", img_str - img_ptr);
 	}
 	img = ud_img_jpg_build_image(&jpg);
 	mlx_print_this_shit(img);
+	/*printf("%d\n", (int)(img - svae));
+	printf("%02.2hhx ", *img);
+	exit(0);
+	//unsigned char	*img_ptr = img;
+	while (*img != 0xff || *(img + 1) != 0xd9)
+	{
+	//	++img;
+		printf("%02.2hhx ", *img);
+		if (*img == 0xff && *(img + 1))
+		{
+			printf("\nsize of frame %ld\n", img - img_ptr);
+			img_ptr = img;
+			img = ud_img_jpg_read_segment(++img, &jpg);
+			if (*(img_ptr + 1) == 0xda)
+			{
+				printf("size of frame %ld\n", img - img_ptr);
+				img_ptr = img;
+			}
+		//	unsigned char	*img_ptr = img;
+		}
+		//else if (*img == )
+		else
+			++img;
+			//printf("%hhx\n", *(img + 1));
+	}*/
+	//printf("\n");
+	//printf("%d\n", (int)(img - svae));
 	return (img);
 }

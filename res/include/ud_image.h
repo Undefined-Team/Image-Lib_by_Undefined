@@ -23,6 +23,7 @@
 # define UD_IMG_JPG_APP_MAX		0xef		// Application specific n ...
 # define UD_IMG_JPG_COM			0xfe		// Commment
 # define UD_IMG_JPG_EOI			0xd9		// Endo Of Image
+# define UD_IMG_MAX_HUFFTABLE	4
 
 # define UD_IMG_JPG_SIGN		0xffd8		// JPG Signature
 # define UD_IMG_PNG_SIGN_1		0x89504e47	// PNG Signature Pt 1
@@ -30,6 +31,7 @@
 # define UD_IMG_BM_SIGN			0x424d		// Bit Map Signature
 # define UD_IMG_SVG_SIGN_1		0x3c3f786d	// SVG Signature Pt 1
 # define UD_IMG_SVG_SIGN_2		0x6c		// SVG Signature Pt 2
+
 
 # define ud_img_jpg_check_marker_start(unsigned_char)		unsigned_char == 0xff ? 1 : 0
 //# define ud_round(float_val)								float_val - (int)float_val > 0.5 ? float_val + 1 : float_val
@@ -88,6 +90,8 @@ typedef struct			uds_jpg
 	ud_arr				*quantization_mat;
 	//unsigned char		*lum_quantization_mat;
 	//unsigned char		*chrom_quantization_mat;
+	unsigned char		restart_interval; // 1 or 0
+	unsigned short		mcu_by_interval;
 	unsigned char		data_precision; // ???
 	unsigned short		img_height; //in pixel
 	unsigned short		img_width; //in pixel
@@ -104,6 +108,7 @@ typedef struct			uds_img
 {
 	ud_img_color_space	color_space;
 	ud_arr				*pixels;
+	size_t				comp_nbr;
 	size_t				width;
 	size_t				height;
 }						ud_img;

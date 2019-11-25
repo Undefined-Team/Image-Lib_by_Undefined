@@ -7,9 +7,9 @@ int main(int ac, char **av)
 {
 	if (ac)
 		;
-	short sh = 0b1111111100101111;
-	printf("%hd == -208 ? \n", sh);
 	ud_img_parse_image(av[1]);
+/*	short sh = 0b1111111100101111;
+	printf("%hd == -208 ? \n", sh);
 	int a[8][8] =	{{-477, 24, 7, -25, -6, -28, -1, 7},
 					{-66, -23, -5, 15, 16, -13, 12, 8},
 					{8, -5, 14, 74, 4, 16, 13, -2},
@@ -28,7 +28,7 @@ int main(int ac, char **av)
 					{-1, 0, 0, -1, 0, 2, 1, -1},
 					{-3, 2, -4, -2, 2, 1, -1, 0}};
 	int	b[8][8];
-	ud_img_jpg_compute_idct(c, b);
+ud_img_jpg_compute_idct(c, b);
 	for (int i = 0 ; i < 8 ; ++i)
 	{
 		for (int j = 0 ; j < 8 ; ++j)
@@ -46,7 +46,7 @@ int main(int ac, char **av)
 		}
 		printf("\n");	
 	}
-/*	ud_img_parse_zig_zag(NULL, NULL, 10, 1);
+*//*	ud_img_parse_zig_zag(NULL, NULL, 10, 1);
 	ud_img_parse_zig_zag(NULL, NULL, 3, 5);
 	ud_img_parse_zig_zag(NULL, NULL, 5, 3);
 	ud_img_parse_zig_zag(NULL, NULL, 2, 2);

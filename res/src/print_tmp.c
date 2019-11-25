@@ -5,13 +5,23 @@ void		mlx_print_this_shit(ud_img *img)
 {
 	void	*mlx_ptr = mlx_init();
 	void	*win_ptr = mlx_new_window(mlx_ptr, img->width, img->height, "ca");
+	float	r, g, b;
 	ud_img_pix_ycbcr	*pix = (ud_img_pix_ycbcr *)img->pixels->val;
 	for (ud_ut_count i = 0; i < img->width * img->height; ++i)
 	{
-		float r = (float)pix->luminance + 1.402 * (float)(pix->chroma_red - 128);
-		float g = (float)pix->luminance - 0.34414 * (float)(pix->chroma_blue - 128) - 0.71414 * (float)(pix->chroma_red - 128);
-		float b = (float)pix->luminance + 1.772 * (float)(pix->chroma_blue - 128);
-	/*	
+		if (img->comp_nbr == 3)
+		{
+			r = (float)pix->luminance + 1.402 * (float)(pix->chroma_red - 128);
+			g = (float)pix->luminance - 0.34414 * (float)(pix->chroma_blue - 128) - 0.71414 * (float)(pix->chroma_red - 128);
+			b = (float)pix->luminance + 1.772 * (float)(pix->chroma_blue - 128);
+		}
+		else if (img->comp_nbr == 1)
+		{
+			r = pix->luminance;// + 1.402 * (float)(pix->chroma_red - 128);
+			g = pix->luminance;// - 0.34414 * (float)(pix->chroma_blue - 128) - 0.71414 * (float)(pix->chroma_red - 128);
+			b = pix->luminance;
+		}
+		/*	
 		float r = pix->luminance + (2 - 2 * 0.299) * (pix->chroma_red - 128) + 128;
 		float b = pix->luminance + (2 - 2 * 0.114) * (pix->chroma_blue - 128) + 128;
 		float g = (pix->luminance - 0.114 * b - 0.299 * r) / 0.587 + 128;
