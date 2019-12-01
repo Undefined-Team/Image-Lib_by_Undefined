@@ -510,6 +510,12 @@ static unsigned char *ud_img_jpg_restart_interval_ctr(unsigned char *img, ud_jpg
 	return (img + seg_len);
 }
 
+static unsigned char	*ud_img_jpg_skip_com(unsigned char *img)
+{
+	unsigned short	seg_len = ((((unsigned short)*img) << 8) | (unsigned short)*(img + 1));
+	return (img + seg_len);
+}
+
 static unsigned char	*ud_img_jpg_read_segment(unsigned char *img, ud_jpg *jpg)
 {
 	if (*img == UD_IMG_JPG_SOI)
@@ -531,12 +537,17 @@ static unsigned char	*ud_img_jpg_read_segment(unsigned char *img, ud_jpg *jpg)
 	else if (*img >= UD_IMG_JPG_APP_MIN && *img <= UD_IMG_JPG_APP_MAX)
 		return (ud_img_jpg_app_ctr(img + 1, jpg, (*img & 0x0f)));
 	else if (*img == UD_IMG_JPG_COM)
-		return (img + 1);
+		return (ud_img_jpg_skip_com(img + 1));
 	else if (*img == UD_IMG_JPG_EOI)
 		return (img + 1);
+	else if (*img >= UD_IMG_JPG_SOF0 && *img <= UD_IMG_JPG_SOF15)
+	{
+		printf("Start of frame marker combination not supported\n");
+		exit(-1);
+	}
 	else
 	{
-		printf("An unexpected error occured, file is certainly damaged\n");
+		printf("An unexpected error occured, file is certainly damaged %hhx\n", *img);
 		exit(-1);
 	}
 	return (img + 1);
@@ -554,6 +565,10 @@ static ud_jpg		ud_img_jpg_init_jpg_struct(void)
 	}
 	jpg.mcu_lst = NULL;
 	jpg.restart_interval = 0;
+	jpg.img_height = 0;
+	jpg.img_width = 0;
+	jpg.mcu_height = 0;
+	jpg.mcu_width = 0;
 	return (jpg);
 }
 
