@@ -8,11 +8,24 @@
 
 // Macro
 # define UD_M_1SQRT2			0.70710678118
-# define UD_M_PI				3.14159265359
-# define UD_M_PI_16				0.19634954084
+
 # define UD_IMG_JPG_SOI			0xd8		// Start Of Image JPEG FILE EXTENSION
-# define UD_IMG_JPG_SOF_BD		0xc0		// Start Of Frame (Baseline DCT)
-# define UD_IMG_JPG_SOF_PD		0xc2		// Start Of Frame (Progressive DCT)
+
+/* SOF_MARKERS	*/
+# define UD_IMG_JPG_SOF0		0xc0		// Start Of Frame (Baseline DCT, Huffman coding)
+# define UD_IMG_JPG_SOF1		0xc1		// Start Of Frame (Extended sequential DCT, Huffman coding)
+# define UD_IMG_JPG_SOF2		0xc2		// Start Of Frame (Progressive DCT, Huffman coding)
+# define UD_IMG_JPG_SOF3		0xc3		// Start Of Frame (Lossless sequential, Huffman coding)
+# define UD_IMG_JPG_SOF5		0xc5		// Start Of Frame (Differencial sequential DCT, Huffman coding)
+# define UD_IMG_JPG_SOF6		0xc6		// Start Of Frame (Differencial progressive DCT, Huffman coding)
+# define UD_IMG_JPG_SOF7		0xc7		// Start Of Frame (Differencial lossless sequential, Huffman coding)
+# define UD_IMG_JPG_SOF9		0xc9		// Start Of Frame (Extended sequential DCT, arithmetic coding)
+# define UD_IMG_JPG_SOF10		0xca		// Start Of Frame (Progressive DCT, arithmetic coding)
+# define UD_IMG_JPG_SOF11		0xcb		// Start Of Frame (Lossless sequential, arithmetic coding)
+# define UD_IMG_JPG_SOF13		0xcd		// Start Of Frame (Differencial sequential DCT, arithmetic coding)
+# define UD_IMG_JPG_SOF14		0xce		// Start Of Frame (Differencial progressive DCT, arithmetic coding)
+# define UD_IMG_JPG_SOF15		0xcf		// Start Of Frame (Differencial lossless sequential, arithmetic coding)
+
 # define UD_IMG_JPG_DHT			0xc4		// Define Huffman Table(s)
 # define UD_IMG_JPG_DQT			0xdb		// Define Quantization Table(s)
 # define UD_IMG_JPG_DRI			0xdd		// Define Restart Interval
@@ -23,7 +36,9 @@
 # define UD_IMG_JPG_APP_MAX		0xef		// Application specific n ...
 # define UD_IMG_JPG_COM			0xfe		// Commment
 # define UD_IMG_JPG_EOI			0xd9		// Endo Of Image
-# define UD_IMG_MAX_HUFFTABLE	4
+
+# define UD_IMG_JPG_MAX_HUFF_TABLE	4
+# define UD_IMG_JPG_MAX_QUANT_MAT	4
 
 # define UD_IMG_JPG_SIGN		0xffd8		// JPG Signature
 # define UD_IMG_PNG_SIGN_1		0x89504e47	// PNG Signature Pt 1
@@ -34,8 +49,6 @@
 
 
 # define ud_img_jpg_check_marker_start(unsigned_char)		unsigned_char == 0xff ? 1 : 0
-//# define ud_round(float_val)								float_val - (int)float_val > 0.5 ? float_val + 1 : float_val
-# define ud_round(float_val)								float_val
 # define ud_prot_overflow(val)								val > 255 ? 255 : val
 // Structures
 
@@ -44,17 +57,10 @@ typedef enum				{UD_DU_JPG_UNKNOWN, UD_DU_JPG_PBINCH, UD_DU_JPG_PBCM} ud_density
 typedef enum				{UD_CS_RGB, UD_CS_YCBCR} ud_img_color_space;
 typedef enum				{UD_HC_DC, UD_HC_AC} ud_huff_class;
 
-/*typedef struct		uds_jfif
-{
-	
-}					ud_jfif;
-*/
-
 typedef struct			uds_mcu
 {
-	int					***val; //need to be changed for opti to many allocation
-	struct uds_mcu		*next;
-	int	nb;
+	int					*val;
+	int					nb;
 }						ud_mcu;
 
 typedef struct			uds_huff
@@ -67,10 +73,11 @@ typedef struct			uds_huff
 
 typedef struct			uds_jpg_comp
 {
-	unsigned char		comp_id; // JPGEG DEFINIED FOR 0-255 BUT JFIF NORM ACTUALLY USE 1,2,3 ONLY
+	unsigned char		comp_id; 
 	unsigned char		hor_sampling;	// 1, 2, 3 or 4
-	unsigned char		ver_sampling;	// same as hor
+	unsigned char		ver_sampling;	// 1, 2, 3 or 4
 	unsigned char		quant_mat_id;	// 0, 1, 2 or 3
+	unsigned char		nbr_by_mcu;
 	ud_huff				*ac_table;
 	ud_huff				*dc_table;
 	ud_mcu				*mcu_lst;
@@ -84,24 +91,20 @@ typedef struct			uds_jpg
 	ud_density_unit		density_unit;
 	unsigned short		x_pixel_by_unit;
 	unsigned short		y_pixel_by_unit;
-	unsigned char		thumbnail_width;
-	unsigned char		thumbnail_height;
-	int					**thumbnail;
 	ud_arr				*quantization_mat;
-	//unsigned char		*lum_quantization_mat;
-	//unsigned char		*chrom_quantization_mat;
-	unsigned char		restart_interval; // 1 or 0
+	unsigned char		restart_interval;	// boolean
 	unsigned short		mcu_by_interval;
-	unsigned char		data_precision; // ???
-	unsigned short		img_height; //in pixel
-	unsigned short		img_width; //in pixel
-	unsigned short		mcu_height; //in pixel
-	unsigned short		mcu_width; //in pixel
-	unsigned char		comp_nbr; //components nbr
+	unsigned char		data_precision;
+	unsigned short		img_height;			//in pixel
+	unsigned short		img_width;			//in pixel
+	unsigned short		mcu_height;			//in pixel
+	unsigned short		mcu_width;			//in pixel
+	unsigned char		comp_nbr;
 	ud_jpg_comp			*components;
 	ud_huff				*ac_huff_tables[4];
 	ud_huff				*dc_huff_tables[4];
 	ud_mcu				*mcu_lst;
+	int					mcu_nbr;
 }						ud_jpg;
 
 typedef struct			uds_img
@@ -129,9 +132,9 @@ typedef struct			uds_img_pix_ycbcr
 
 // Prototypes
 
-void	ud_img_parse_image(char *s);
-void	mlx_print_this_shit(ud_img *img);
-ud_img		*ud_img_decryption_jpg_to_rgb(unsigned char *img); //a changer en ud arr *
-
+ud_img	*ud_img_parse_image(char *s);
+ud_img	*ud_img_jpg_decryption(unsigned char *img);
+void	ud_img_free_img(ud_img *img);
+void	mlx_print_jpg(ud_img *img); // temporary function
 
 #endif
