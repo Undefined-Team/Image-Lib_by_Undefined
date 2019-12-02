@@ -64,12 +64,14 @@ ud_img		*ud_img_parse_image(char *img_path)
 		img = ud_img_jpg_decryption((unsigned char *)img_str);
 	// ---- to do ---- //
 	else if (image_type == UD_IT_PNG)
-		printf("PNG FILE\n");
+		img = ud_img_png_decryption((unsigned char *)img_str);
+		//printf("PNG FILE\n");
 	else if (image_type == UD_IT_BM)
 		printf("BM FILE\n");
 	else if (image_type == UD_IT_SVG)
 		printf("SVG FILE\n");
 	else
 		printf("%s is not a valid file\n", img_path);
+	free(img_str);
 	return (img);
 }
