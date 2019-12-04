@@ -1,0 +1,8 @@
+256 - 279	7 depth 0000000		- 0010111
+0 -	143		8 depth	00110000	- 10111111
+280 - 285	8 depth 11000000	- 11000101
+144 - 255	9 depth 110010000	- 111111111
+
+
+PNG TEST FILES : http://www.schaik.com/pngsuite/#filtering
+tt values == 286 + 75 + 56 + 28 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = 572

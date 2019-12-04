@@ -703,6 +703,5 @@ ud_img		*ud_img_jpg_decryption(unsigned char *img_str)
 	while (ud_img_jpg_check_marker_start(*img_str))
 		img_str = ud_img_jpg_read_segment(img_str + 1, &jpg);
 	img = ud_img_jpg_build_image(&jpg);
-	mlx_print_jpg(img);
 	return (img);
 }

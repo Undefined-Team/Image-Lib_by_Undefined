@@ -42,6 +42,7 @@
 # define UD_IMG_JPG_MAX_HUFF_TABLE	4
 # define UD_IMG_JPG_MAX_QUANT_MAT	4
 
+# define UD_IMG_PNG_STATICHUFF_SIZE	572
 //	SIGNATURES
 
 # define UD_IMG_JPG_SIGN		0xffd8		// JPG Signature
@@ -66,6 +67,7 @@ typedef enum				{UD_HC_DC, UD_HC_AC} ud_huff_class;
 // PNG Enum
 //typedef enum				{UD_CHUNK_IHDR, UD_CHUNK_PLTE, UD_CHUNK_IDAT, UD_CHUNK_IEND, UD_CHUNK_tRNS, UD_CHUNK_cHRM, UD_CHUNK_gAMA, UD_CHUNK_iCCP, UD_CHUNK_sBIT, UD_CHUNK_sRGB, UD_CHUNK_tEXt, UD_CHUNK_zTXt, UD_CHUNK_iTXt, UD_CHUNK_bKGD, UD_CHUNK_hIST, UD_CHUNK_pHYs, UD_CHUNK_sPLT, UD_CHUNK_tIME, UD_CHUNK_UNKN} ud_chunk_id;
 typedef enum				{UD_PNG_GREYSCALE, UD_PNG_RGB, UD_PNG_PALETTE, UD_PNG_GREYSCALE_A, UD_PNG_RGB_A} ud_png_color_type;
+typedef enum				{UD_PNG_RAW, UD_PNG_STATICHUFF, UD_PNG_SUPPHUFF, UD_PNG_RESERVED} ud_png_encoding;
 // Structures
 
 typedef struct			uds_img_pix_rgb
@@ -110,6 +112,15 @@ typedef struct			uds_huff
 	unsigned char		val;
 	unsigned char		val_len;
 }						ud_huff;
+
+typedef struct			uds_png_huff
+{
+	struct uds_png_huff	*right_1;
+	struct uds_png_huff	*left_0;
+	unsigned short		val;
+	unsigned short		tmp_huff_code;
+	unsigned char		code_len;
+}						ud_png_huff;
 
 typedef struct			uds_jpg_comp
 {
@@ -183,6 +194,8 @@ typedef struct			uds_png
 	ud_img_png_chroma	*chroma;
 	ud_img_png_spix		background;
 	ud_img_png_spix		*transp_tab;
+	ud_png_huff			*litlen_tree;
+	ud_png_huff			*dist_tree;
 }						ud_png;
 
 typedef struct			uds_img
