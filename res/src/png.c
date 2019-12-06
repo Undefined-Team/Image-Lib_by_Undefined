@@ -29,7 +29,7 @@ void	tmp_print_huff_tree(ud_png_huff *tree)
 		while (--l)
 			printf("%c", ((huff >> l) & 1) ? '1' : '0');
 		printf("%c", (huff & 1) ? '1' : '0');
-		printf("\t = %hu\t(len %hhu)\n", tree->val, tree->code_len);
+		printf("\t = %d\t(len %d)\n", tree->val, tree->code_len);
 		return ;
 	}
 	if (tree->left_0)
@@ -188,28 +188,24 @@ unsigned char				*ud_img_png_count_code_length(unsigned char *cl_list, unsigned 
 {
 	unsigned char	*cl_count;
 
-	ud_ut_prot_malloc(cl_count = ud_ut_malloc(sizeof(unsigned char) * (max_code_length + 1)));
+	ud_ut_prot_malloc(cl_count = (unsigned char *)ud_ut_malloc(sizeof(unsigned char) * (max_code_length + 1)));
+	//cl_count[max_code_length + 1] = 0;
 	for (ud_ut_count i = 0; i <= max_code_length; ++i) cl_count[i] = 0;
 	for (ud_ut_count i = 0; i < len; ++i)
 	{
 		printf("cl_list[%zu] : %d\n", i, cl_list[i]);
-		++cl_count[cl_list[i]];
+		++(cl_count[cl_list[i]]);
 	}
+	for (ud_ut_count i = 0; i <= max_code_length; ++i) printf("%d ",cl_count[i]);
+	printf("\n");
 	return cl_count;
 }
 
-/*
 static size_t			ud_img_png_get_huff_table_size(unsigned char *cl_count, size_t nb_iter)
 {
 	size_t	size = 0;
-	//size_t	nb_iter = 16;
 	size_t	mult = 0;
 
-	while (!*cl_count)
-	{
-		--cl_count;
-		--nb_iter;
-	}
 	for (ud_ut_count i = 0; i < nb_iter; ++i, --cl_count)
 	{
 		mult = (mult + 1) / 2 + *cl_count;
@@ -217,51 +213,103 @@ static size_t			ud_img_png_get_huff_table_size(unsigned char *cl_count, size_t n
 	}
 	return (size + 1);
 }
-*/
 
-ud_png_huff					*ud_img_png_create_huff_node(void)
+void	ud_img_png_init_huff_node(ud_png_huff *node)
 {
-	ud_png_huff	*node;
-
 	//ud_ut_prot_malloc(node = ud_ut_malloc(sizeof(ud_png_huff)));
-	node = malloc(sizeof(ud_png_huff));
 	node->left_0 = NULL;
 	node->right_1 = NULL;
-	return node;
+	node->val = 0;
+	node->tmp_huff_code = 0;
+	node->code_len = 0;
 }
 
-void						ud_img_png_add_huff_val(ud_png_huff *huff_tree, unsigned char depth, unsigned char code_len, unsigned short huff_code, size_t val)
+/*void						ud_img_png_add_huff_val(ud_png_huff *huff_tree, unsigned char depth, unsigned char code_len, unsigned short huff_code, size_t val, size_t *add_index, ud_png_huff *actual)
 {
 	if (!depth)
 	{
-		huff_tree->val = val;
-		huff_tree->code_len = code_len;
-		huff_tree->tmp_huff_code = huff_code;
+		actual->val = val;
+		actual->code_len = code_len;
+		actual->tmp_huff_code = huff_code;
 		return ;
 	}
 	if (((huff_code >> (depth - 1)) & 1))
 	{
-		if (!huff_tree->right_1)
-			huff_tree->right_1 = ud_img_png_create_huff_node();
-		return ud_img_png_add_huff_val(huff_tree->right_1, depth - 1, code_len, huff_code, val);
+		if (!(actual->right_1))
+		{
+		//	actual->right_1 = malloc(sizeof(ud_png_huff));
+		//	ud_img_png_init_huff_node(actual->right_1);
+		//	printf("add_index %zu\n", *add_index);
+			ud_img_png_init_huff_node(&(huff_tree[*add_index]));
+			actual->right_1 = &(huff_tree[(*add_index)++]);
+			//ud_img_png_create_huff_node();
+		}
+			//printf("add_index %zu\n", *add_index);
+		return ud_img_png_add_huff_val(huff_tree, depth - 1, code_len, huff_code, val, add_index, actual->right_1);
 	}
-	if (!huff_tree->left_0)
-		huff_tree->left_0 = ud_img_png_create_huff_node();
-	return ud_img_png_add_huff_val(huff_tree->left_0, depth - 1, code_len, huff_code, val);
+	if (!(actual->left_0))
+	{
+//		actual->left_0 = malloc(sizeof(ud_png_huff));
+//		ud_img_png_init_huff_node(actual->left_0);
+//		printf("add_index %zu\n", *add_index);
+		ud_img_png_init_huff_node(&(huff_tree[*add_index]));
+		actual->left_0 = &(huff_tree[(*add_index)++]);
+	}
+//	printf(" afteradd_index %zu\n", *add_index);
+	return ud_img_png_add_huff_val(huff_tree, depth - 1, code_len, huff_code, val, add_index, actual->left_0);
+}
+*/
+void						ud_img_png_add_huff_val(ud_png_huff *huff_tree, unsigned char depth, unsigned char code_len, unsigned short huff_code, unsigned short val, size_t *add_index, ud_png_huff *actual)
+{
+	while (depth--)
+	{
+		if (((huff_code >> depth) & 1))
+		{
+			if (!actual->right_1)
+			{
+				actual->right_1 = &(huff_tree[*add_index]);
+				ud_img_png_init_huff_node(&(huff_tree[(*add_index)++]));
+			}
+			actual = actual->right_1;
+		}
+		else
+		{
+			if (!actual->left_0)
+			{
+				actual->left_0 = &(huff_tree[*add_index]);
+				ud_img_png_init_huff_node(&(huff_tree[(*add_index)++]));
+			}
+			actual = actual->left_0;
+		}
+	}
+	actual->val = val;
+	actual->code_len = code_len;
+	actual->tmp_huff_code = huff_code;
 }
 
+/*void	fct
+{
+	if ()
+}*/
 
 // NEED TO REPLACE HUFF TREE NODE ALLOCAION BY A BIG TAB ALLOCATION LIKE IN JPG
 
-ud_png_huff					*ud_img_png_create_huffman_tree(unsigned char *cl_list, unsigned short *next_code, size_t val_nbr)
+ud_png_huff					*ud_img_png_create_huffman_tree(unsigned char *cl_list, unsigned char *cl_count, unsigned short *next_code, size_t val_nbr, unsigned char max_code_length)
 {
-	ud_png_huff	*huff_tree = ud_img_png_create_huff_node();
-	//size_t		tree_size = ud_img_png_get_huff_table_size(cl_count + max_code_length, max_code_length);
+	//(void)next_code;
+	size_t		add_index = 1;
+	size_t		tree_size = ud_img_png_get_huff_table_size(cl_count + max_code_length, max_code_length);
+	printf("tree_size %zu\n", tree_size);
+	ud_png_huff	*huff_tree; //= ud_img_png_create_huff_node();
+
+	ud_ut_prot_malloc(huff_tree = ud_ut_malloc(sizeof(ud_png_huff) * tree_size));
+	ud_img_png_init_huff_node(huff_tree);
 	for (ud_ut_count i = 0; i < val_nbr; ++i)
 	{
 		if (cl_list[i])
-			ud_img_png_add_huff_val(huff_tree, cl_list[i], cl_list[i], next_code[cl_list[i]]++, i);
+			ud_img_png_add_huff_val(huff_tree, cl_list[i], cl_list[i], next_code[cl_list[i]]++, i, &add_index, huff_tree);
 	}
+	//free(cl_count);
 	return huff_tree;
 }
 
@@ -289,7 +337,7 @@ ud_png_huff					*ud_img_png_cl_to_huffman_tree(unsigned char *cl_list, size_t le
 		if (cl_list[i])
 			printf("value %zu: length %d repres %d\n", i, cl_list[i], next_code[cl_list[i]]++);
 	}*/
-	return ud_img_png_create_huffman_tree(cl_list, next_code, len);
+	return ud_img_png_create_huffman_tree(cl_list, cl_count,  next_code, len, max_code_length);
 }
 
 unsigned short				ud_img_png_read_huffman_tree(ud_png_huff *cl_huff, unsigned char **img_str_addr, unsigned char *bit_pos)
@@ -312,7 +360,7 @@ unsigned char				*ud_img_png_read_symbols(ud_png_huff *cl_huff, unsigned char **
 	unsigned char	repeat;
 	unsigned char	prev_cl;
 
-	ud_ut_prot_malloc(litlen_dist_cl = ud_ut_malloc(elem_nbr * sizeof(unsigned char)));
+	ud_ut_prot_malloc(litlen_dist_cl = ud_ut_malloc((elem_nbr + 1) * sizeof(unsigned char)));
 	while (index < elem_nbr)
 	{
 		symbol = ud_img_png_read_huffman_tree(cl_huff, img_str_addr, bit_pos);
