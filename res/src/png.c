@@ -117,14 +117,14 @@ static unsigned char	*ud_img_png_parse_palette(unsigned int chunk_len, unsigned 
 	}
 	return (img_str + 4);
 }
-
+/*
 void					ud_img_png_init_tree(void *huff_tree, size_t tree_len)
 {
 	char			*huff_tree_init = (char *)huff_tree;
 
 	for (ud_ut_count i = 0; i < tree_len; ++i) huff_tree_init[i] = '\0';
 }
-
+*/
 int						ud_img_png_read_bits(unsigned char **img_str_addr, unsigned char *bit_pos, size_t nb_bits)
 {
 	int	val = 0;
@@ -159,18 +159,8 @@ void					ud_img_png_fill_static_huffman_tree(int depth, int first_value, int las
 		printf("%c", ((rep >> depth) & 1) ? '1': '0');
 	printf(" = %d\n", first_value);
 }
-
-ud_png_huff				*ud_img_png_build_static_huffman_tree(void)
-{
-	ud_png_huff		*huff_tree;
-	//size_t			*index = 0;
-
-	ud_ut_prot_malloc(huff_tree = ud_ut_malloc(sizeof(ud_png_huff) * UD_IMG_PNG_STATICHUFF_SIZE));
-	ud_img_png_init_tree(huff_tree, sizeof(ud_png_huff) * UD_IMG_PNG_STATICHUFF_SIZE);
-	ud_img_png_fill_static_huffman_tree(7, 256, 279, 0);
-	return NULL;
-}
 */
+
 unsigned char				ud_img_png_get_max_code_length(unsigned char *cl_list, size_t len)
 {
 	unsigned char	max_code_length = 0;
@@ -255,8 +245,6 @@ void						ud_img_png_add_huff_val(ud_png_huff *huff_tree, unsigned char depth, u
 }*/
 
 
-// NEED TO REPLACE HUFF TREE NODE ALLOCAION BY A BIG TAB ALLOCATION LIKE IN JPG
-
 ud_png_huff					*ud_img_png_create_huffman_tree(unsigned char *cl_list, unsigned char *cl_count, unsigned short *next_code, size_t val_nbr, unsigned char max_code_length)
 {
 	(void)next_code;
@@ -270,7 +258,11 @@ ud_png_huff					*ud_img_png_create_huffman_tree(unsigned char *cl_list, unsigned
 	for (ud_ut_count i = 0; i < val_nbr; ++i)
 	{
 		if (cl_list[i])
+		{
+			
+			printf("rep %d val %zu len %d\n", next_code[cl_list[i]], i, cl_list[i]);
 			ud_img_png_add_huff_val(huff_tree, cl_list[i], cl_list[i], next_code[cl_list[i]]++, i, &add_index, huff_tree);
+		}
 	}
 	//free(cl_count);
 	return huff_tree;
@@ -290,7 +282,8 @@ ud_png_huff					*ud_img_png_cl_to_huffman_tree(unsigned char *cl_list, size_t le
 	printf("\n0 ");
 	for (ud_ut_count i = 1; i <= max_code_length; ++i)
 	{
-		code = ((code + cl_count[i - 1]) << 1);
+		//if (cl_count[i - 1])
+		code = (code + cl_count[i - 1]) << 1;
 		next_code[i] = code;
 		printf("%hu ", next_code[i]);
 	}
@@ -303,16 +296,18 @@ ud_png_huff					*ud_img_png_cl_to_huffman_tree(unsigned char *cl_list, size_t le
 	return ud_img_png_create_huffman_tree(cl_list, cl_count,  next_code, len, max_code_length);
 }
 
-unsigned short				ud_img_png_read_huffman_tree(ud_png_huff *cl_huff, unsigned char **img_str_addr, unsigned char *bit_pos)
+unsigned short				ud_img_png_read_huffman_tree(ud_png_huff *huff_tree, unsigned char **img_str_addr, unsigned char *bit_pos)
 {
-	while (cl_huff->right_1 || cl_huff->left_0)
+	while (huff_tree->right_1 || huff_tree->left_0)
 	{
 		if (ud_img_png_read_bits(img_str_addr, bit_pos, 1) == 1)
-			cl_huff = cl_huff->right_1;
+			huff_tree = huff_tree->right_1;
 		else
-			cl_huff = cl_huff->left_0;
+			huff_tree = huff_tree->left_0;
+		if (!huff_tree)
+			printf(":((((((((\n");
 	}
-	return cl_huff->val;
+	return huff_tree->val;
 }
 
 unsigned char				*ud_img_png_read_symbols(ud_png_huff *cl_huff, unsigned char **img_str_addr, unsigned char *bit_pos, size_t elem_nbr)
@@ -365,10 +360,72 @@ void				ud_img_png_parse_huffman_tree(unsigned char **img_str_addr, unsigned cha
 	//return (NULL);
 }
 
+void					ud_img_png_inflate_huffman_coding(unsigned char **img_str_addr, unsigned char *bit_pos, ud_png *png)
+{
+	unsigned short				val = 0;
+	size_t						len;
+	size_t						dist_val;
+	size_t						dist;
+	int							eob = 0;
+	const static unsigned char	litlen_extra_bits[29] = {0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0};
+	const static unsigned short	litlen_base[29] = {3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258};
+	const static unsigned char	dist_extra_bits[30] = {0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13};
+	const static unsigned short	dist_base[30] = {1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577};
+
+	while (!eob)
+	{
+		val = ud_img_png_read_huffman_tree(png->litlen_tree, img_str_addr, bit_pos);
+		printf("val : %hu\n", val);
+		if (val < 256) png->pix_stream[png->stream_index++] = val;
+		else if (val > 256 && val < 286)
+		{
+			val -= 257;
+			len = ud_img_png_read_bits(img_str_addr, bit_pos, litlen_extra_bits[val]) + litlen_base[val];
+			dist_val = ud_img_png_read_huffman_tree(png->dist_tree, img_str_addr, bit_pos);
+			dist = ud_img_png_read_bits(img_str_addr, bit_pos, dist_extra_bits[dist_val]) + dist_base[dist_val];
+			for (ud_ut_count i = 0; i < len; ++i, ++png->stream_index)
+				png->pix_stream[png->stream_index] = png->pix_stream[png->stream_index - dist];
+		}
+		else if (val == 256)
+			eob = 1;
+		else
+		{
+			printf("YA UN PB\n");
+			exit(-1);
+		}
+	}
+}
+
+void	ud_img_png_build_static_huffman_tree(ud_png *png)
+{
+	int		rep_val = 0;
+	size_t	add_index = 1;
+
+	ud_ut_prot_malloc_void(png->litlen_tree = ud_ut_malloc(sizeof(ud_png_huff) * UD_IMG_PNG_STATICHUFF_SIZE));
+	ud_ut_prot_malloc_void(png->dist_tree = ud_ut_malloc(sizeof(ud_png_huff) * 69)); // add macro
+	ud_img_png_init_huff_node(png->litlen_tree);
+	ud_img_png_init_huff_node(png->dist_tree);
+	for (ud_ut_count i = 256; i < 280; ++i)
+		ud_img_png_add_huff_val(png->litlen_tree, 7, 7, rep_val++, i, &add_index, png->litlen_tree);
+	rep_val <<= 1;
+	for (ud_ut_count i = 0; i < 144; ++i)
+		ud_img_png_add_huff_val(png->litlen_tree, 8, 8, rep_val++, i, &add_index, png->litlen_tree);
+	for (ud_ut_count i = 280; i < 288; ++i)
+		ud_img_png_add_huff_val(png->litlen_tree, 8, 8, rep_val++, i, &add_index, png->litlen_tree);
+	rep_val <<= 1;
+	for (ud_ut_count i = 144; i < 256; ++i)
+		ud_img_png_add_huff_val(png->litlen_tree, 9, 9, rep_val++, i, &add_index, png->litlen_tree);
+	add_index = 1;
+	rep_val = 0;
+	for (ud_ut_count i = 0; i < 30; ++i)
+		ud_img_png_add_huff_val(png->dist_tree, 5, 5, rep_val++, i, &add_index, png->dist_tree);
+}
+
 static unsigned char	*ud_img_png_parse_data(unsigned int chunk_len, unsigned char *img_str, ud_png *png)
 {
 	unsigned char	bit_pos = 0;
 	int				last_block = 0;
+	unsigned char	*img_str_cpy = img_str;
 	(void)png;
 	printf("IDATA (Datastream) Chunk: cmf byte %hhx flag byte %hhx \n", *img_str, *(img_str + 1));
 	int		cm = (*img_str & 0x0f); // compression method
@@ -379,24 +436,38 @@ static unsigned char	*ud_img_png_parse_data(unsigned int chunk_len, unsigned cha
 	printf("New block :\n\tcm: %x\n\tcinfo: %x\n\tfcheck: %x\n\tfdcit: %x\n\tflevel: %x\n", cm, cinfo, fcheck, fdict, flevel);
 	do // read a block
 	{
-		last_block = ((*img_str >> bit_pos++) & 1);	
-		int		comp_method = ((*img_str >> bit_pos) & 2);
+		last_block = ud_img_png_read_bits(&img_str, &bit_pos, 1);
+		//((*img_str >> bit_pos++) & 1);
+		int		comp_method = ud_img_png_read_bits(&img_str, &bit_pos, 2);
+		//((*img_str >> bit_pos) & 2);
 		
-		bit_pos += 2;
+		//bit_pos += 2;
 		printf("\tLast block ? %d Comp method: %s\n",last_block,tmp_print_comp_method(comp_method));
-		if (comp_method == UD_PNG_SUPPHUFF) ud_img_png_parse_huffman_tree(&img_str, &bit_pos, &png->litlen_tree, &png->dist_tree);
-		//if (comp_method == UD_PNG_STATICHUFF) ud_img_png_build_static_huffman_tree();
-		//ud_img_png_parse_huffman_table(img_str);
+		if (comp_method == UD_PNG_RAW)
+		{
+			//read raw 
+			printf("Raw data\n");
+			exit(0);
+		}
+		else
+		{
+			if (comp_method == UD_PNG_SUPPHUFF) ud_img_png_parse_huffman_tree(&img_str, &bit_pos, &png->litlen_tree, &png->dist_tree);
+			else if (comp_method == UD_PNG_STATICHUFF) ud_img_png_build_static_huffman_tree(png);
+			//tmp_print_huff_tree(png->litlen_tree);
+			//tmp_print_huff_tree(png->dist_tree);
+				;//return (img_str_cpy + chunk_len + 4);
+				;//build static tree
+			ud_img_png_inflate_huffman_coding(&img_str, &bit_pos, png);
+			//ud_img_png_parse_huffman_table(img_str);
 		//img_str++;
 		//chunk_len -= 3;
 		//while (chunk_len--)
 			//printf("%02.2hhx ", *img_str++);
-		exit(0);
-	printf("\n");
-	return (img_str + 4);
-
+		}
+		//exit(1);
 	}
 	while (!last_block);
+
 	/*bit_pos--;
 	int		comp_method = 0;
 	if (((*img_str >> bit_pos--) & 1))
@@ -405,10 +476,10 @@ static unsigned char	*ud_img_png_parse_data(unsigned int chunk_len, unsigned cha
 		comp_method |= 1;
 	printf("\tComp method: %c%c\n", (comp_method & 2) ? '1': '0', (comp_method & 1) ? '1' : '0');
 	*/
-	while (chunk_len--)
-		printf("%02.2hhx ", *img_str++);
-	printf("\n");
-	return (img_str + 4);
+	//while (chunk_len--)
+	//	printf("%02.2hhx ", *img_str++);
+	//printf("\n");
+	return (img_str_cpy + chunk_len + 4);
 }
 
 static unsigned char	*ud_img_png_parse_transparency(unsigned int chunk_len, unsigned char *img_str, ud_png *png)
@@ -601,7 +672,6 @@ static unsigned char	*(*ud_img_png_get_parse_function(unsigned char *img_str))(u
 	if (!ud_str_cmp(chunk_name, "PLTE")) return &ud_img_png_parse_palette;
 	if (!ud_str_cmp(chunk_name, "IDAT")) return &ud_img_png_parse_data;
 	if (!ud_str_cmp(chunk_name, "IEND")) return NULL;
-
 	// ANCILLARY
 	if (!ud_str_cmp(chunk_name, "tRNS")) return &ud_img_png_parse_transparency;
 	if (!ud_str_cmp(chunk_name, "cHRM")) return &ud_img_png_parse_chromaticities;
@@ -634,7 +704,18 @@ static ud_png	ud_img_png_init(void)
 	png.transp_tab = NULL;
 	png.litlen_tree = NULL;
 	png.dist_tree = NULL;
+	png.img_width = 32;
+	png.img_height = 32;
+	png.stream_index = 0;
 	return png;
+}
+
+int		ud_img_png_get_chann_nbr(ud_png_color_type color_type)
+{
+	if (color_type == UD_PNG_GREYSCALE) return 1;
+	if (color_type == UD_PNG_GREYSCALE_A) return 2;
+	if (color_type == UD_PNG_RGB_A) return 4;
+	return 3;
 }
 
 ud_img	*ud_img_png_decryption(unsigned char *img_str)
@@ -643,6 +724,7 @@ ud_img	*ud_img_png_decryption(unsigned char *img_str)
 	unsigned char	*(*chunk_f)(unsigned int, unsigned char *, ud_png *);
 	unsigned int	chunk_len;
 	ud_png			png = ud_img_png_init();
+
 	img_str += 8; // skip png signature
 	for (int check_data_chunk = 0; check_data_chunk != 1;)
 	{
@@ -653,6 +735,7 @@ ud_img	*ud_img_png_decryption(unsigned char *img_str)
 		if (chunk_f == ud_img_png_parse_data) check_data_chunk = 1;
 		else img_str = (*chunk_f)(chunk_len, img_str, &png);
 	}
+	ud_ut_prot_malloc(png.pix_stream = ud_ut_malloc(sizeof(unsigned char) * png.img_height * png.img_width * ud_img_png_get_chann_nbr(png.color_type) + png.img_height));
 	while (chunk_f == ud_img_png_parse_data)
 	{
 		img_str = (*chunk_f)(chunk_len, img_str, &png);
@@ -668,6 +751,13 @@ ud_img	*ud_img_png_decryption(unsigned char *img_str)
 		img_str += 4;
 		chunk_f = ud_img_png_get_parse_function(img_str);
 		img_str += 4;
+	}
+	//printf("pixel stream nb val: %zu\n", png.stream_index);
+	for (ud_ut_count r = 0; (int)r < png.img_height; ++r)
+	{
+		printf("%02.2x ", png.pix_stream[r * png.img_height]);
+		for (int i = 1; i < png.img_width + 1; ++i)
+			printf("%02.2x %02.2x %02.2x %02.2x ", (png.pix_stream[r * png.img_height + i] >> 6), ((png.pix_stream[r * png.img_height + i] >> 4) & 2),((png.pix_stream[r * png.img_height + i] >> 2) & 2),(png.pix_stream[r * png.img_height + i] & 2));
 	}
 	return (NULL);
 }

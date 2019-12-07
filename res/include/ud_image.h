@@ -196,6 +196,8 @@ typedef struct			uds_png
 	ud_img_png_spix		*transp_tab;
 	ud_png_huff			*litlen_tree;
 	ud_png_huff			*dist_tree;
+	unsigned char		*pix_stream;
+	size_t				stream_index;
 }						ud_png;
 
 typedef struct			uds_img

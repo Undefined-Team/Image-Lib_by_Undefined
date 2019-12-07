@@ -1,1339 +1,1420 @@
+661 = 4?
 IHDR (Header) Chunk:
-	Image size : 420x420 pixels
-	Bit depth : 8
-	Color type : RGB with alpha (transparency)
+	Image size : 32x32 pixels
+	Bit depth : 1
+	Color type : Greyscale
 	Compression method : 0
 	Filter method : 0
 	Interlace method : No Interlace
-useless chunk ? : sRGB
 gAMA (Gamma) Chunk:
-	value : 0.454550
-pHYs (Physical dimension) Chunk:
-	Pixels per unit, X axis: 3779
-	Pixels per unit, Y axis: 3779
-	unit specifier : meter
-IDATA (Datastream) Chunk: cmf byte 78 flag byte 5e 
+	value : 1.000000
+IDATA (Datastream) Chunk: cmf byte 78 flag byte 9c 
 New block :
 	cm: 8
 	cinfo: 7
-	fcheck: 1e
+	fcheck: 1c
 	fdcit: 0
-	flevel: 0
+	flevel: 2
 	Last block ? 1 Comp method: Huffman table supplied
-hlit : 286 hdit : 30 hclen 14
-cl_list[0] : 7
-cl_list[1] : 0
-cl_list[2] : 0
-cl_list[3] : 6
-cl_list[4] : 5
-cl_list[5] : 5
-cl_list[6] : 5
-cl_list[7] : 4
-cl_list[8] : 3
-cl_list[9] : 2
-cl_list[10] : 2
-cl_list[11] : 4
-cl_list[12] : 7
+hlit : 262 hdit : 13 hclen 18
+cl_list[0] : 2
+cl_list[1] : 5
+cl_list[2] : 4
+cl_list[3] : 5
+cl_list[4] : 3
+cl_list[5] : 3
+cl_list[6] : 0
+cl_list[7] : 3
+cl_list[8] : 0
+cl_list[9] : 0
+cl_list[10] : 0
+cl_list[11] : 0
+cl_list[12] : 0
 cl_list[13] : 0
 cl_list[14] : 0
 cl_list[15] : 0
-cl_list[16] : 3
-cl_list[17] : 0
-cl_list[18] : 0
-7 0 2 2 2 3 1 2 
+cl_list[16] : 0
+cl_list[17] : 3
+cl_list[18] : 3
+10 0 1 5 1 2 
 
-0 0 0 4 12 28 62 126 
-tree_size 22
-add_index 1
-add_index 2
-add_index 3
-add_index 4
-add_index 5
-add_index 6
-add_index 7
-add_index 8
-add_index 9
-add_index 10
-add_index 11
-add_index 12
-add_index 13
-add_index 14
-add_index 15
-add_index 16
-add_index 17
-add_index 18
-add_index 19
-add_index 20
-add_index 21
-add_index 22
-00	 = 9	(len 2)
-01	 = 10	(len 2)
-100	 = 8	(len 3)
-101	 = 16	(len 3)
-1100	 = 7	(len 4)
-1101	 = 11	(len 4)
-11100	 = 4	(len 5)
-11101	 = 5	(len 5)
-11110	 = 6	(len 5)
-111110	 = 3	(len 6)
-1111110	 = 0	(len 7)
-1111111	 = 12	(len 7)
-cl_list[0] : 9
-cl_list[1] : 10
-cl_list[2] : 10
-cl_list[3] : 10
-cl_list[4] : 10
-cl_list[5] : 10
-cl_list[6] : 9
-cl_list[7] : 10
-cl_list[8] : 9
-cl_list[9] : 10
-cl_list[10] : 10
-cl_list[11] : 11
-cl_list[12] : 10
-cl_list[13] : 10
-cl_list[14] : 10
-cl_list[15] : 10
-cl_list[16] : 10
-cl_list[17] : 10
-cl_list[18] : 10
-cl_list[19] : 10
-cl_list[20] : 10
-cl_list[21] : 10
-cl_list[22] : 10
-cl_list[23] : 10
-cl_list[24] : 10
-cl_list[25] : 10
-cl_list[26] : 10
-cl_list[27] : 10
-cl_list[28] : 10
-cl_list[29] : 10
-cl_list[30] : 10
-cl_list[31] : 10
-cl_list[32] : 10
-cl_list[33] : 10
-cl_list[34] : 10
-cl_list[35] : 10
-cl_list[36] : 11
-cl_list[37] : 10
-cl_list[38] : 10
-cl_list[39] : 10
-cl_list[40] : 10
-cl_list[41] : 10
-cl_list[42] : 10
-cl_list[43] : 11
-cl_list[44] : 10
-cl_list[45] : 10
-cl_list[46] : 11
-cl_list[47] : 10
-cl_list[48] : 11
-cl_list[49] : 10
-cl_list[50] : 10
-cl_list[51] : 10
-cl_list[52] : 11
-cl_list[53] : 10
-cl_list[54] : 11
-cl_list[55] : 11
-cl_list[56] : 11
-cl_list[57] : 11
-cl_list[58] : 11
-cl_list[59] : 11
-cl_list[60] : 10
-cl_list[61] : 12
-cl_list[62] : 10
-cl_list[63] : 11
-cl_list[64] : 10
-cl_list[65] : 10
-cl_list[66] : 11
-cl_list[67] : 11
-cl_list[68] : 11
-cl_list[69] : 10
-cl_list[70] : 10
-cl_list[71] : 10
-cl_list[72] : 10
-cl_list[73] : 10
-cl_list[74] : 10
-cl_list[75] : 11
-cl_list[76] : 10
-cl_list[77] : 10
-cl_list[78] : 10
-cl_list[79] : 10
-cl_list[80] : 11
-cl_list[81] : 11
-cl_list[82] : 11
-cl_list[83] : 10
-cl_list[84] : 10
-cl_list[85] : 10
-cl_list[86] : 10
-cl_list[87] : 10
-cl_list[88] : 10
-cl_list[89] : 9
-cl_list[90] : 9
-cl_list[91] : 9
-cl_list[92] : 9
-cl_list[93] : 9
-cl_list[94] : 9
-cl_list[95] : 9
-cl_list[96] : 9
-cl_list[97] : 9
-cl_list[98] : 9
-cl_list[99] : 9
-cl_list[100] : 9
-cl_list[101] : 9
-cl_list[102] : 9
-cl_list[103] : 9
-cl_list[104] : 9
-cl_list[105] : 9
-cl_list[106] : 10
-cl_list[107] : 9
-cl_list[108] : 9
-cl_list[109] : 9
-cl_list[110] : 10
-cl_list[111] : 9
-cl_list[112] : 9
-cl_list[113] : 9
-cl_list[114] : 10
-cl_list[115] : 10
-cl_list[116] : 9
-cl_list[117] : 10
-cl_list[118] : 9
-cl_list[119] : 10
-cl_list[120] : 9
-cl_list[121] : 9
-cl_list[122] : 9
-cl_list[123] : 10
-cl_list[124] : 9
-cl_list[125] : 10
-cl_list[126] : 10
-cl_list[127] : 9
-cl_list[128] : 9
-cl_list[129] : 9
-cl_list[130] : 9
-cl_list[131] : 9
-cl_list[132] : 9
-cl_list[133] : 10
-cl_list[134] : 10
-cl_list[135] : 9
-cl_list[136] : 9
-cl_list[137] : 9
-cl_list[138] : 9
-cl_list[139] : 10
-cl_list[140] : 9
-cl_list[141] : 10
-cl_list[142] : 10
-cl_list[143] : 10
-cl_list[144] : 10
-cl_list[145] : 10
-cl_list[146] : 9
-cl_list[147] : 9
-cl_list[148] : 9
-cl_list[149] : 10
-cl_list[150] : 9
-cl_list[151] : 9
-cl_list[152] : 9
-cl_list[153] : 9
-cl_list[154] : 9
-cl_list[155] : 9
-cl_list[156] : 9
-cl_list[157] : 9
-cl_list[158] : 9
-cl_list[159] : 8
-cl_list[160] : 9
-cl_list[161] : 8
-cl_list[162] : 8
-cl_list[163] : 8
-cl_list[164] : 8
-cl_list[165] : 8
-cl_list[166] : 8
-cl_list[167] : 8
-cl_list[168] : 8
-cl_list[169] : 8
-cl_list[170] : 8
-cl_list[171] : 8
-cl_list[172] : 8
-cl_list[173] : 8
-cl_list[174] : 8
-cl_list[175] : 8
-cl_list[176] : 8
-cl_list[177] : 8
-cl_list[178] : 8
-cl_list[179] : 8
-cl_list[180] : 9
-cl_list[181] : 8
-cl_list[182] : 8
-cl_list[183] : 9
-cl_list[184] : 8
-cl_list[185] : 9
-cl_list[186] : 9
-cl_list[187] : 8
-cl_list[188] : 8
-cl_list[189] : 9
-cl_list[190] : 8
-cl_list[191] : 8
-cl_list[192] : 8
-cl_list[193] : 9
-cl_list[194] : 8
-cl_list[195] : 8
-cl_list[196] : 8
-cl_list[197] : 8
-cl_list[198] : 8
-cl_list[199] : 8
-cl_list[200] : 8
-cl_list[201] : 8
-cl_list[202] : 8
-cl_list[203] : 9
-cl_list[204] : 8
-cl_list[205] : 8
-cl_list[206] : 8
-cl_list[207] : 8
-cl_list[208] : 8
-cl_list[209] : 8
-cl_list[210] : 8
-cl_list[211] : 8
-cl_list[212] : 8
-cl_list[213] : 9
-cl_list[214] : 9
-cl_list[215] : 8
-cl_list[216] : 9
-cl_list[217] : 8
-cl_list[218] : 8
-cl_list[219] : 8
-cl_list[220] : 8
-cl_list[221] : 8
-cl_list[222] : 8
-cl_list[223] : 8
-cl_list[224] : 8
-cl_list[225] : 9
-cl_list[226] : 8
-cl_list[227] : 9
-cl_list[228] : 8
-cl_list[229] : 8
-cl_list[230] : 8
-cl_list[231] : 9
-cl_list[232] : 9
-cl_list[233] : 8
-cl_list[234] : 8
-cl_list[235] : 9
-cl_list[236] : 9
-cl_list[237] : 9
-cl_list[238] : 9
-cl_list[239] : 8
-cl_list[240] : 9
-cl_list[241] : 9
-cl_list[242] : 8
-cl_list[243] : 9
-cl_list[244] : 9
-cl_list[245] : 9
-cl_list[246] : 9
-cl_list[247] : 9
-cl_list[248] : 9
-cl_list[249] : 9
-cl_list[250] : 9
-cl_list[251] : 9
-cl_list[252] : 9
-cl_list[253] : 10
-cl_list[254] : 11
-cl_list[255] : 4
-cl_list[256] : 12
-cl_list[257] : 4
-cl_list[258] : 3
-cl_list[259] : 5
-cl_list[260] : 7
-cl_list[261] : 6
-cl_list[262] : 6
-cl_list[263] : 9
-cl_list[264] : 10
-cl_list[265] : 7
-cl_list[266] : 10
-cl_list[267] : 7
-cl_list[268] : 10
-cl_list[269] : 6
-cl_list[270] : 8
-cl_list[271] : 9
-cl_list[272] : 8
-cl_list[273] : 7
-cl_list[274] : 8
-cl_list[275] : 7
-cl_list[276] : 9
-cl_list[277] : 6
-cl_list[278] : 8
-cl_list[279] : 8
-cl_list[280] : 8
-cl_list[281] : 8
-cl_list[282] : 8
-cl_list[283] : 8
-cl_list[284] : 8
-cl_list[285] : 4
-0 0 0 1 3 1 4 5 73 89 87 21 2 
-
-0 0 0 0 2 10 22 52 114 374 926 2026 4094 
-tree_size 570
-add_index 1
-add_index 2
-add_index 3
-add_index 4
-add_index 5
-add_index 6
-add_index 7
-add_index 8
-add_index 9
-add_index 10
-add_index 11
-add_index 12
-add_index 13
-add_index 14
-add_index 15
-add_index 16
-add_index 17
-add_index 18
-add_index 19
-add_index 20
-add_index 21
-add_index 22
-add_index 23
-add_index 24
-add_index 25
-add_index 26
-add_index 27
-add_index 28
-add_index 29
-add_index 30
-add_index 31
-add_index 32
-add_index 33
-add_index 34
-add_index 35
-add_index 36
-add_index 37
-add_index 38
-add_index 39
-add_index 40
-add_index 41
-add_index 42
-add_index 43
-add_index 44
-add_index 45
-add_index 46
-add_index 47
-add_index 48
-add_index 49
-add_index 50
-add_index 51
-add_index 52
-add_index 53
-add_index 54
-add_index 55
-add_index 56
-add_index 57
-add_index 58
-add_index 59
-add_index 60
-add_index 61
-add_index 62
-add_index 63
-add_index 64
-add_index 65
-add_index 66
-add_index 67
-add_index 68
-add_index 69
-add_index 70
-add_index 71
-add_index 72
-add_index 73
-add_index 74
-add_index 75
-add_index 76
-add_index 77
-add_index 78
-add_index 79
-add_index 80
-add_index 81
-add_index 82
-add_index 83
-add_index 84
-add_index 85
-add_index 86
-add_index 87
-add_index 88
-add_index 89
-add_index 90
-add_index 91
-add_index 92
-add_index 93
-add_index 94
-add_index 95
-add_index 96
-add_index 97
-add_index 98
-add_index 99
-add_index 100
-add_index 101
-add_index 102
-add_index 103
-add_index 104
-add_index 105
-add_index 106
-add_index 107
-add_index 108
-add_index 109
-add_index 110
-add_index 111
-add_index 112
-add_index 113
-add_index 114
-add_index 115
-add_index 116
-add_index 117
-add_index 118
-add_index 119
-add_index 120
-add_index 121
-add_index 122
-add_index 123
-add_index 124
-add_index 125
-add_index 126
-add_index 127
-add_index 128
-add_index 129
-add_index 130
-add_index 131
-add_index 132
-add_index 133
-add_index 134
-add_index 135
-add_index 136
-add_index 137
-add_index 138
-add_index 139
-add_index 140
-add_index 141
-add_index 142
-add_index 143
-add_index 144
-add_index 145
-add_index 146
-add_index 147
-add_index 148
-add_index 149
-add_index 150
-add_index 151
-add_index 152
-add_index 153
-add_index 154
-add_index 155
-add_index 156
-add_index 157
-add_index 158
-add_index 159
-add_index 160
-add_index 161
-add_index 162
-add_index 163
-add_index 164
-add_index 165
-add_index 166
-add_index 167
-add_index 168
-add_index 169
-add_index 170
-add_index 171
-add_index 172
-add_index 173
-add_index 174
-add_index 175
-add_index 176
-add_index 177
-add_index 178
-add_index 179
-add_index 180
-add_index 181
-add_index 182
-add_index 183
-add_index 184
-add_index 185
-add_index 186
-add_index 187
-add_index 188
-add_index 189
-add_index 190
-add_index 191
-add_index 192
-add_index 193
-add_index 194
-add_index 195
-add_index 196
-add_index 197
-add_index 198
-add_index 199
-add_index 200
-add_index 201
-add_index 202
-add_index 203
-add_index 204
-add_index 205
-add_index 206
-add_index 207
-add_index 208
-add_index 209
-add_index 210
-add_index 211
-add_index 212
-add_index 213
-add_index 214
-add_index 215
-add_index 216
-add_index 217
-add_index 218
-add_index 219
-add_index 220
-add_index 221
-add_index 222
-add_index 223
-add_index 224
-add_index 225
-add_index 226
-add_index 227
-add_index 228
-add_index 229
-add_index 230
-add_index 231
-add_index 232
-add_index 233
-add_index 234
-add_index 235
-add_index 236
-add_index 237
-add_index 238
-add_index 239
-add_index 240
-add_index 241
-add_index 242
-add_index 243
-add_index 244
-add_index 245
-add_index 246
-add_index 247
-add_index 248
-add_index 249
-add_index 250
-add_index 251
-add_index 252
-add_index 253
-add_index 254
-add_index 255
-add_index 256
-add_index 257
-add_index 258
-add_index 259
-add_index 260
-add_index 261
-add_index 262
-add_index 263
-add_index 264
-add_index 265
-add_index 266
-add_index 267
-add_index 268
-add_index 269
-add_index 270
-add_index 271
-add_index 272
-add_index 273
-add_index 274
-add_index 275
-add_index 276
-add_index 277
-add_index 278
-add_index 279
-add_index 280
-add_index 281
-add_index 282
-add_index 283
-add_index 284
-add_index 285
-add_index 286
-add_index 287
-add_index 288
-add_index 289
-add_index 290
-add_index 291
-add_index 292
-add_index 293
-add_index 294
-add_index 295
-add_index 296
-add_index 297
-add_index 298
-add_index 299
-add_index 300
-add_index 301
-add_index 302
-add_index 303
-add_index 304
-add_index 305
-add_index 306
-add_index 307
-add_index 308
-add_index 309
-add_index 310
-add_index 311
-add_index 312
-add_index 313
-add_index 314
-add_index 315
-add_index 316
-add_index 317
-add_index 318
-add_index 319
-add_index 320
-add_index 321
-add_index 322
-add_index 323
-add_index 324
-add_index 325
-add_index 326
-add_index 327
-add_index 328
-add_index 329
-add_index 330
-add_index 331
-add_index 332
-add_index 333
-add_index 334
-add_index 335
-add_index 336
-add_index 337
-add_index 338
-add_index 339
-add_index 340
-add_index 341
-add_index 342
-add_index 343
-add_index 344
-add_index 345
-add_index 346
-add_index 347
-add_index 348
-add_index 349
-add_index 350
-add_index 351
-add_index 352
-add_index 353
-add_index 354
-add_index 355
-add_index 356
-add_index 357
-add_index 358
-add_index 359
-add_index 360
-add_index 361
-add_index 362
-add_index 363
-add_index 364
-add_index 365
-add_index 366
-add_index 367
-add_index 368
-add_index 369
-add_index 370
-add_index 371
-add_index 372
-add_index 373
-add_index 374
-add_index 375
-add_index 376
-add_index 377
-add_index 378
-add_index 379
-add_index 380
-add_index 381
-add_index 382
-add_index 383
-add_index 384
-add_index 385
-add_index 386
-add_index 387
-add_index 388
-add_index 389
-add_index 390
-add_index 391
-add_index 392
-add_index 393
-add_index 394
-add_index 395
-add_index 396
-add_index 397
-add_index 398
-add_index 399
-add_index 400
-add_index 401
-add_index 402
-add_index 403
-add_index 404
-add_index 405
-add_index 406
-add_index 407
-add_index 408
-add_index 409
-add_index 410
-add_index 411
-add_index 412
-add_index 413
-add_index 414
-add_index 415
-add_index 416
-add_index 417
-add_index 418
-add_index 419
-add_index 420
-add_index 421
-add_index 422
-add_index 423
-add_index 424
-add_index 425
-add_index 426
-add_index 427
-add_index 428
-add_index 429
-add_index 430
-add_index 431
-add_index 432
-add_index 433
-add_index 434
-add_index 435
-add_index 436
-add_index 437
-add_index 438
-add_index 439
-add_index 440
-add_index 441
-add_index 442
-add_index 443
-add_index 444
-add_index 445
-add_index 446
-add_index 447
-add_index 448
-add_index 449
-add_index 450
-add_index 451
-add_index 452
-add_index 453
-add_index 454
-add_index 455
-add_index 456
-add_index 457
-add_index 458
-add_index 459
-add_index 460
-add_index 461
-add_index 462
-add_index 463
-add_index 464
-add_index 465
-add_index 466
-add_index 467
-add_index 468
-add_index 469
-add_index 470
-add_index 471
-add_index 472
-add_index 473
-add_index 474
-add_index 475
-add_index 476
-add_index 477
-add_index 478
-add_index 479
-add_index 480
-add_index 481
-add_index 482
-add_index 483
-add_index 484
-add_index 485
-add_index 486
-add_index 487
-add_index 488
-add_index 489
-add_index 490
-add_index 491
-add_index 492
-add_index 493
-add_index 494
-add_index 495
-add_index 496
-add_index 497
-add_index 498
-add_index 499
-add_index 500
-add_index 501
-add_index 502
-add_index 503
-add_index 504
-add_index 505
-add_index 506
-add_index 507
-add_index 508
-add_index 509
-add_index 510
-add_index 511
-add_index 512
-add_index 513
-add_index 514
-add_index 515
-add_index 516
-add_index 517
-add_index 518
-add_index 519
-add_index 520
-add_index 521
-add_index 522
-add_index 523
-add_index 524
-add_index 525
-add_index 526
-add_index 527
-add_index 528
-add_index 529
-add_index 530
-add_index 531
-add_index 532
-add_index 533
-add_index 534
-add_index 535
-add_index 536
-add_index 537
-add_index 538
-add_index 539
-add_index 540
-add_index 541
-add_index 542
-add_index 543
-add_index 544
-add_index 545
-add_index 546
-add_index 547
-add_index 548
-add_index 549
-add_index 550
-add_index 551
-add_index 552
-add_index 553
-add_index 554
-add_index 555
-add_index 556
-add_index 557
-add_index 558
-add_index 559
-add_index 560
-add_index 561
-add_index 562
-add_index 563
-add_index 564
-add_index 565
-add_index 566
-add_index 567
-add_index 568
-add_index 569
-add_index 570
-000	 = 258	(len 3)
-0010	 = 255	(len 4)
-0011	 = 257	(len 4)
-0100	 = 285	(len 4)
-01010	 = 259	(len 5)
-010110	 = 261	(len 6)
-010111	 = 262	(len 6)
-011000	 = 269	(len 6)
-011001	 = 277	(len 6)
-0110100	 = 260	(len 7)
-0110101	 = 265	(len 7)
-0110110	 = 267	(len 7)
-0110111	 = 273	(len 7)
-0111000	 = 275	(len 7)
-01110010	 = 159	(len 8)
-01110011	 = 161	(len 8)
-01110100	 = 162	(len 8)
-01110101	 = 163	(len 8)
-01110110	 = 164	(len 8)
-01110111	 = 165	(len 8)
-01111000	 = 166	(len 8)
-01111001	 = 167	(len 8)
-01111010	 = 168	(len 8)
-01111011	 = 169	(len 8)
-01111100	 = 170	(len 8)
-01111101	 = 171	(len 8)
-01111110	 = 172	(len 8)
-01111111	 = 173	(len 8)
-10000000	 = 174	(len 8)
-10000001	 = 175	(len 8)
-10000010	 = 176	(len 8)
-10000011	 = 177	(len 8)
-10000100	 = 178	(len 8)
-10000101	 = 179	(len 8)
-10000110	 = 181	(len 8)
-10000111	 = 182	(len 8)
-10001000	 = 184	(len 8)
-10001001	 = 187	(len 8)
-10001010	 = 188	(len 8)
-10001011	 = 190	(len 8)
-10001100	 = 191	(len 8)
-10001101	 = 192	(len 8)
-10001110	 = 194	(len 8)
-10001111	 = 195	(len 8)
-10010000	 = 196	(len 8)
-10010001	 = 197	(len 8)
-10010010	 = 198	(len 8)
-10010011	 = 199	(len 8)
-10010100	 = 200	(len 8)
-10010101	 = 201	(len 8)
-10010110	 = 202	(len 8)
-10010111	 = 204	(len 8)
-10011000	 = 205	(len 8)
-10011001	 = 206	(len 8)
-10011010	 = 207	(len 8)
-10011011	 = 208	(len 8)
-10011100	 = 209	(len 8)
-10011101	 = 210	(len 8)
-10011110	 = 211	(len 8)
-10011111	 = 212	(len 8)
-10100000	 = 215	(len 8)
-10100001	 = 217	(len 8)
-10100010	 = 218	(len 8)
-10100011	 = 219	(len 8)
-10100100	 = 220	(len 8)
-10100101	 = 221	(len 8)
-10100110	 = 222	(len 8)
-10100111	 = 223	(len 8)
-10101000	 = 224	(len 8)
-10101001	 = 226	(len 8)
-10101010	 = 228	(len 8)
-10101011	 = 229	(len 8)
-10101100	 = 230	(len 8)
-10101101	 = 233	(len 8)
-10101110	 = 234	(len 8)
-10101111	 = 239	(len 8)
-10110000	 = 242	(len 8)
-10110001	 = 270	(len 8)
-10110010	 = 272	(len 8)
-10110011	 = 274	(len 8)
-10110100	 = 278	(len 8)
-10110101	 = 279	(len 8)
-10110110	 = 280	(len 8)
-10110111	 = 281	(len 8)
-10111000	 = 282	(len 8)
-10111001	 = 283	(len 8)
-10111010	 = 284	(len 8)
-101110110	 = 0	(len 9)
-101110111	 = 6	(len 9)
-101111000	 = 8	(len 9)
-101111001	 = 89	(len 9)
-101111010	 = 90	(len 9)
-101111011	 = 91	(len 9)
-101111100	 = 92	(len 9)
-101111101	 = 93	(len 9)
-101111110	 = 94	(len 9)
-101111111	 = 95	(len 9)
-110000000	 = 96	(len 9)
-110000001	 = 97	(len 9)
-110000010	 = 98	(len 9)
-110000011	 = 99	(len 9)
-110000100	 = 100	(len 9)
-110000101	 = 101	(len 9)
-110000110	 = 102	(len 9)
-110000111	 = 103	(len 9)
-110001000	 = 104	(len 9)
-110001001	 = 105	(len 9)
-110001010	 = 107	(len 9)
-110001011	 = 108	(len 9)
-110001100	 = 109	(len 9)
-110001101	 = 111	(len 9)
-110001110	 = 112	(len 9)
-110001111	 = 113	(len 9)
-110010000	 = 116	(len 9)
-110010001	 = 118	(len 9)
-110010010	 = 120	(len 9)
-110010011	 = 121	(len 9)
-110010100	 = 122	(len 9)
-110010101	 = 124	(len 9)
-110010110	 = 127	(len 9)
-110010111	 = 128	(len 9)
-110011000	 = 129	(len 9)
-110011001	 = 130	(len 9)
-110011010	 = 131	(len 9)
-110011011	 = 132	(len 9)
-110011100	 = 135	(len 9)
-110011101	 = 136	(len 9)
-110011110	 = 137	(len 9)
-110011111	 = 138	(len 9)
-110100000	 = 140	(len 9)
-110100001	 = 146	(len 9)
-110100010	 = 147	(len 9)
-110100011	 = 148	(len 9)
-110100100	 = 150	(len 9)
-110100101	 = 151	(len 9)
-110100110	 = 152	(len 9)
-110100111	 = 153	(len 9)
-110101000	 = 154	(len 9)
-110101001	 = 155	(len 9)
-110101010	 = 156	(len 9)
-110101011	 = 157	(len 9)
-110101100	 = 158	(len 9)
-110101101	 = 160	(len 9)
-110101110	 = 180	(len 9)
-110101111	 = 183	(len 9)
-110110000	 = 185	(len 9)
-110110001	 = 186	(len 9)
-110110010	 = 189	(len 9)
-110110011	 = 193	(len 9)
-110110100	 = 203	(len 9)
-110110101	 = 213	(len 9)
-110110110	 = 214	(len 9)
-110110111	 = 216	(len 9)
-110111000	 = 225	(len 9)
-110111001	 = 227	(len 9)
-110111010	 = 231	(len 9)
-110111011	 = 232	(len 9)
-110111100	 = 235	(len 9)
-110111101	 = 236	(len 9)
-110111110	 = 237	(len 9)
-110111111	 = 238	(len 9)
-111000000	 = 240	(len 9)
-111000001	 = 241	(len 9)
-111000010	 = 243	(len 9)
-111000011	 = 244	(len 9)
-111000100	 = 245	(len 9)
-111000101	 = 246	(len 9)
-111000110	 = 247	(len 9)
-111000111	 = 248	(len 9)
-111001000	 = 249	(len 9)
-111001001	 = 250	(len 9)
-111001010	 = 251	(len 9)
-111001011	 = 252	(len 9)
-111001100	 = 263	(len 9)
-111001101	 = 271	(len 9)
-111001110	 = 276	(len 9)
-1110011110	 = 1	(len 10)
-1110011111	 = 2	(len 10)
-1110100000	 = 3	(len 10)
-1110100001	 = 4	(len 10)
-1110100010	 = 5	(len 10)
-1110100011	 = 7	(len 10)
-1110100100	 = 9	(len 10)
-1110100101	 = 10	(len 10)
-1110100110	 = 12	(len 10)
-1110100111	 = 13	(len 10)
-1110101000	 = 14	(len 10)
-1110101001	 = 15	(len 10)
-1110101010	 = 16	(len 10)
-1110101011	 = 17	(len 10)
-1110101100	 = 18	(len 10)
-1110101101	 = 19	(len 10)
-1110101110	 = 20	(len 10)
-1110101111	 = 21	(len 10)
-1110110000	 = 22	(len 10)
-1110110001	 = 23	(len 10)
-1110110010	 = 24	(len 10)
-1110110011	 = 25	(len 10)
-1110110100	 = 26	(len 10)
-1110110101	 = 27	(len 10)
-1110110110	 = 28	(len 10)
-1110110111	 = 29	(len 10)
-1110111000	 = 30	(len 10)
-1110111001	 = 31	(len 10)
-1110111010	 = 32	(len 10)
-1110111011	 = 33	(len 10)
-1110111100	 = 34	(len 10)
-1110111101	 = 35	(len 10)
-1110111110	 = 37	(len 10)
-1110111111	 = 38	(len 10)
-1111000000	 = 39	(len 10)
-1111000001	 = 40	(len 10)
-1111000010	 = 41	(len 10)
-1111000011	 = 42	(len 10)
-1111000100	 = 44	(len 10)
-1111000101	 = 45	(len 10)
-1111000110	 = 47	(len 10)
-1111000111	 = 49	(len 10)
-1111001000	 = 50	(len 10)
-1111001001	 = 51	(len 10)
-1111001010	 = 53	(len 10)
-1111001011	 = 60	(len 10)
-1111001100	 = 62	(len 10)
-1111001101	 = 64	(len 10)
-1111001110	 = 65	(len 10)
-1111001111	 = 69	(len 10)
-1111010000	 = 70	(len 10)
-1111010001	 = 71	(len 10)
-1111010010	 = 72	(len 10)
-1111010011	 = 73	(len 10)
-1111010100	 = 74	(len 10)
-1111010101	 = 76	(len 10)
-1111010110	 = 77	(len 10)
-1111010111	 = 78	(len 10)
-1111011000	 = 79	(len 10)
-1111011001	 = 83	(len 10)
-1111011010	 = 84	(len 10)
-1111011011	 = 85	(len 10)
-1111011100	 = 86	(len 10)
-1111011101	 = 87	(len 10)
-1111011110	 = 88	(len 10)
-1111011111	 = 106	(len 10)
-1111100000	 = 110	(len 10)
-1111100001	 = 114	(len 10)
-1111100010	 = 115	(len 10)
-1111100011	 = 117	(len 10)
-1111100100	 = 119	(len 10)
-1111100101	 = 123	(len 10)
-1111100110	 = 125	(len 10)
-1111100111	 = 126	(len 10)
-1111101000	 = 133	(len 10)
-1111101001	 = 134	(len 10)
-1111101010	 = 139	(len 10)
-1111101011	 = 141	(len 10)
-1111101100	 = 142	(len 10)
-1111101101	 = 143	(len 10)
-1111101110	 = 144	(len 10)
-1111101111	 = 145	(len 10)
-1111110000	 = 149	(len 10)
-1111110001	 = 253	(len 10)
-1111110010	 = 264	(len 10)
-1111110011	 = 266	(len 10)
-1111110100	 = 268	(len 10)
-11111101010	 = 11	(len 11)
-11111101011	 = 36	(len 11)
-11111101100	 = 43	(len 11)
-11111101101	 = 46	(len 11)
-11111101110	 = 48	(len 11)
-11111101111	 = 52	(len 11)
-11111110000	 = 54	(len 11)
-11111110001	 = 55	(len 11)
-11111110010	 = 56	(len 11)
-11111110011	 = 57	(len 11)
-11111110100	 = 58	(len 11)
-11111110101	 = 59	(len 11)
-11111110110	 = 63	(len 11)
-11111110111	 = 66	(len 11)
-11111111000	 = 67	(len 11)
-11111111001	 = 68	(len 11)
-11111111010	 = 75	(len 11)
-11111111011	 = 80	(len 11)
-11111111100	 = 81	(len 11)
-11111111101	 = 82	(len 11)
-11111111110	 = 254	(len 11)
-111111111110	 = 61	(len 12)
-111111111111	 = 256	(len 12)
-cl_list[0] : 3
-cl_list[1] : 0
-cl_list[2] : 0
-cl_list[3] : 3
-cl_list[4] : 0
-cl_list[5] : 7
-cl_list[6] : 8
-cl_list[7] : 8
+0 0 0 2 14 30 
+tree_size 17
+rep 0 val 0 len 2
+rep 30 val 1 len 5
+rep 14 val 2 len 4
+rep 31 val 3 len 5
+rep 2 val 4 len 3
+rep 3 val 5 len 3
+rep 4 val 7 len 3
+rep 5 val 17 len 3
+rep 6 val 18 len 3
+00	 = 0	(len 2)
+010	 = 4	(len 3)
+011	 = 5	(len 3)
+100	 = 7	(len 3)
+101	 = 17	(len 3)
+110	 = 18	(len 3)
+1110	 = 2	(len 4)
+11110	 = 1	(len 5)
+11111	 = 3	(len 5)
+cl_list[0] : 2
+cl_list[1] : 2
+cl_list[2] : 2
+cl_list[3] : 2
+cl_list[4] : 2
+cl_list[5] : 2
+cl_list[6] : 2
+cl_list[7] : 7
 cl_list[8] : 7
 cl_list[9] : 7
 cl_list[10] : 7
-cl_list[11] : 6
-cl_list[12] : 6
-cl_list[13] : 6
-cl_list[14] : 5
-cl_list[15] : 6
-cl_list[16] : 5
-cl_list[17] : 6
-cl_list[18] : 5
+cl_list[11] : 7
+cl_list[12] : 7
+cl_list[13] : 0
+cl_list[14] : 0
+cl_list[15] : 7
+cl_list[16] : 7
+cl_list[17] : 7
+cl_list[18] : 7
 cl_list[19] : 7
-cl_list[20] : 4
-cl_list[21] : 3
-cl_list[22] : 5
-cl_list[23] : 4
-cl_list[24] : 5
-cl_list[25] : 5
-cl_list[26] : 4
-cl_list[27] : 5
-cl_list[28] : 4
-cl_list[29] : 5
-3 0 0 3 4 8 5 5 2 
+cl_list[20] : 7
+cl_list[21] : 7
+cl_list[22] : 7
+cl_list[23] : 7
+cl_list[24] : 7
+cl_list[25] : 7
+cl_list[26] : 7
+cl_list[27] : 7
+cl_list[28] : 7
+cl_list[29] : 7
+cl_list[30] : 7
+cl_list[31] : 7
+cl_list[32] : 7
+cl_list[33] : 7
+cl_list[34] : 7
+cl_list[35] : 7
+cl_list[36] : 7
+cl_list[37] : 7
+cl_list[38] : 7
+cl_list[39] : 7
+cl_list[40] : 7
+cl_list[41] : 7
+cl_list[42] : 7
+cl_list[43] : 7
+cl_list[44] : 7
+cl_list[45] : 7
+cl_list[46] : 7
+cl_list[47] : 7
+cl_list[48] : 7
+cl_list[49] : 0
+cl_list[50] : 0
+cl_list[51] : 7
+cl_list[52] : 7
+cl_list[53] : 7
+cl_list[54] : 7
+cl_list[55] : 7
+cl_list[56] : 7
+cl_list[57] : 7
+cl_list[58] : 7
+cl_list[59] : 7
+cl_list[60] : 7
+cl_list[61] : 7
+cl_list[62] : 7
+cl_list[63] : 7
+cl_list[64] : 7
+cl_list[65] : 7
+cl_list[66] : 7
+cl_list[67] : 7
+cl_list[68] : 7
+cl_list[69] : 7
+cl_list[70] : 7
+cl_list[71] : 7
+cl_list[72] : 7
+cl_list[73] : 7
+cl_list[74] : 7
+cl_list[75] : 7
+cl_list[76] : 7
+cl_list[77] : 7
+cl_list[78] : 7
+cl_list[79] : 7
+cl_list[80] : 7
+cl_list[81] : 7
+cl_list[82] : 7
+cl_list[83] : 7
+cl_list[84] : 7
+cl_list[85] : 7
+cl_list[86] : 7
+cl_list[87] : 7
+cl_list[88] : 7
+cl_list[89] : 7
+cl_list[90] : 7
+cl_list[91] : 7
+cl_list[92] : 7
+cl_list[93] : 7
+cl_list[94] : 7
+cl_list[95] : 7
+cl_list[96] : 7
+cl_list[97] : 7
+cl_list[98] : 7
+cl_list[99] : 7
+cl_list[100] : 7
+cl_list[101] : 7
+cl_list[102] : 7
+cl_list[103] : 7
+cl_list[104] : 7
+cl_list[105] : 7
+cl_list[106] : 7
+cl_list[107] : 7
+cl_list[108] : 7
+cl_list[109] : 7
+cl_list[110] : 7
+cl_list[111] : 7
+cl_list[112] : 7
+cl_list[113] : 7
+cl_list[114] : 7
+cl_list[115] : 7
+cl_list[116] : 7
+cl_list[117] : 7
+cl_list[118] : 7
+cl_list[119] : 7
+cl_list[120] : 7
+cl_list[121] : 7
+cl_list[122] : 7
+cl_list[123] : 7
+cl_list[124] : 7
+cl_list[125] : 7
+cl_list[126] : 7
+cl_list[127] : 7
+cl_list[128] : 5
+cl_list[129] : 5
+cl_list[130] : 5
+cl_list[131] : 5
+cl_list[132] : 5
+cl_list[133] : 5
+cl_list[134] : 5
+cl_list[135] : 5
+cl_list[136] : 5
+cl_list[137] : 5
+cl_list[138] : 5
+cl_list[139] : 5
+cl_list[140] : 5
+cl_list[141] : 5
+cl_list[142] : 5
+cl_list[143] : 5
+cl_list[144] : 5
+cl_list[145] : 5
+cl_list[146] : 5
+cl_list[147] : 5
+cl_list[148] : 5
+cl_list[149] : 5
+cl_list[150] : 5
+cl_list[151] : 5
+cl_list[152] : 5
+cl_list[153] : 5
+cl_list[154] : 5
+cl_list[155] : 5
+cl_list[156] : 5
+cl_list[157] : 5
+cl_list[158] : 5
+cl_list[159] : 5
+cl_list[160] : 5
+cl_list[161] : 5
+cl_list[162] : 5
+cl_list[163] : 5
+cl_list[164] : 5
+cl_list[165] : 5
+cl_list[166] : 5
+cl_list[167] : 5
+cl_list[168] : 5
+cl_list[169] : 5
+cl_list[170] : 5
+cl_list[171] : 5
+cl_list[172] : 5
+cl_list[173] : 5
+cl_list[174] : 5
+cl_list[175] : 5
+cl_list[176] : 5
+cl_list[177] : 5
+cl_list[178] : 5
+cl_list[179] : 5
+cl_list[180] : 5
+cl_list[181] : 5
+cl_list[182] : 5
+cl_list[183] : 5
+cl_list[184] : 5
+cl_list[185] : 5
+cl_list[186] : 5
+cl_list[187] : 5
+cl_list[188] : 5
+cl_list[189] : 5
+cl_list[190] : 5
+cl_list[191] : 5
+cl_list[192] : 5
+cl_list[193] : 5
+cl_list[194] : 5
+cl_list[195] : 5
+cl_list[196] : 5
+cl_list[197] : 5
+cl_list[198] : 5
+cl_list[199] : 5
+cl_list[200] : 5
+cl_list[201] : 5
+cl_list[202] : 5
+cl_list[203] : 5
+cl_list[204] : 5
+cl_list[205] : 5
+cl_list[206] : 5
+cl_list[207] : 7
+cl_list[208] : 7
+cl_list[209] : 7
+cl_list[210] : 7
+cl_list[211] : 7
+cl_list[212] : 7
+cl_list[213] : 7
+cl_list[214] : 7
+cl_list[215] : 7
+cl_list[216] : 7
+cl_list[217] : 7
+cl_list[218] : 7
+cl_list[219] : 7
+cl_list[220] : 7
+cl_list[221] : 7
+cl_list[222] : 7
+cl_list[223] : 7
+cl_list[224] : 5
+cl_list[225] : 5
+cl_list[226] : 5
+cl_list[227] : 5
+cl_list[228] : 5
+cl_list[229] : 5
+cl_list[230] : 5
+cl_list[231] : 5
+cl_list[232] : 5
+cl_list[233] : 5
+cl_list[234] : 5
+cl_list[235] : 5
+cl_list[236] : 5
+cl_list[237] : 5
+cl_list[238] : 5
+cl_list[239] : 5
+cl_list[240] : 5
+cl_list[241] : 0
+cl_list[242] : 0
+cl_list[243] : 5
+cl_list[244] : 5
+cl_list[245] : 5
+cl_list[246] : 5
+cl_list[247] : 5
+cl_list[248] : 4
+cl_list[249] : 4
+cl_list[250] : 4
+cl_list[251] : 4
+cl_list[252] : 4
+cl_list[253] : 0
+cl_list[254] : 5
+cl_list[255] : 4
+cl_list[256] : 7
+cl_list[257] : 4
+cl_list[258] : 2
+cl_list[259] : 0
+cl_list[260] : 0
+cl_list[261] : 7
+9 0 8 0 7 102 0 136 
 
-0 0 0 0 6 20 56 122 254 
-tree_size 52
-add_index 1
-add_index 2
-add_index 3
-add_index 4
-add_index 5
-add_index 6
-add_index 7
-add_index 8
-add_index 9
-add_index 10
-add_index 11
-add_index 12
-add_index 13
-add_index 14
-add_index 15
-add_index 16
-add_index 17
-add_index 18
-add_index 19
-add_index 20
-add_index 21
-add_index 22
-add_index 23
-add_index 24
-add_index 25
-add_index 26
-add_index 27
-add_index 28
-add_index 29
-add_index 30
-add_index 31
-add_index 32
-add_index 33
-add_index 34
-add_index 35
-add_index 36
-add_index 37
-add_index 38
-add_index 39
-add_index 40
-add_index 41
-add_index 42
-add_index 43
-add_index 44
-add_index 45
-add_index 46
-add_index 47
-add_index 48
-add_index 49
-add_index 50
-add_index 51
-add_index 52
-000	 = 0	(len 3)
-001	 = 3	(len 3)
-010	 = 21	(len 3)
-0110	 = 20	(len 4)
-0111	 = 23	(len 4)
-1000	 = 26	(len 4)
-1001	 = 28	(len 4)
-10100	 = 14	(len 5)
-10101	 = 16	(len 5)
-10110	 = 18	(len 5)
-10111	 = 22	(len 5)
-11000	 = 24	(len 5)
-11001	 = 25	(len 5)
-11010	 = 27	(len 5)
-11011	 = 29	(len 5)
-111000	 = 11	(len 6)
-111001	 = 12	(len 6)
-111010	 = 13	(len 6)
-111011	 = 15	(len 6)
-111100	 = 17	(len 6)
-1111010	 = 5	(len 7)
-1111011	 = 8	(len 7)
-1111100	 = 9	(len 7)
-1111101	 = 10	(len 7)
-1111110	 = 19	(len 7)
-11111110	 = 6	(len 8)
-11111111	 = 7	(len 8)
+0 0 0 16 32 78 360 720 
+tree_size 495
+rep 0 val 0 len 2
+rep 1 val 1 len 2
+rep 2 val 2 len 2
+rep 3 val 3 len 2
+rep 4 val 4 len 2
+rep 5 val 5 len 2
+rep 6 val 6 len 2
+rep 720 val 7 len 7
+rep 721 val 8 len 7
+rep 722 val 9 len 7
+rep 723 val 10 len 7
+rep 724 val 11 len 7
+rep 725 val 12 len 7
+rep 726 val 15 len 7
+rep 727 val 16 len 7
+rep 728 val 17 len 7
+rep 729 val 18 len 7
+rep 730 val 19 len 7
+rep 731 val 20 len 7
+rep 732 val 21 len 7
+rep 733 val 22 len 7
+rep 734 val 23 len 7
+rep 735 val 24 len 7
+rep 736 val 25 len 7
+rep 737 val 26 len 7
+rep 738 val 27 len 7
+rep 739 val 28 len 7
+rep 740 val 29 len 7
+rep 741 val 30 len 7
+rep 742 val 31 len 7
+rep 743 val 32 len 7
+rep 744 val 33 len 7
+rep 745 val 34 len 7
+rep 746 val 35 len 7
+rep 747 val 36 len 7
+rep 748 val 37 len 7
+rep 749 val 38 len 7
+rep 750 val 39 len 7
+rep 751 val 40 len 7
+rep 752 val 41 len 7
+rep 753 val 42 len 7
+rep 754 val 43 len 7
+rep 755 val 44 len 7
+rep 756 val 45 len 7
+rep 757 val 46 len 7
+rep 758 val 47 len 7
+rep 759 val 48 len 7
+rep 760 val 51 len 7
+rep 761 val 52 len 7
+rep 762 val 53 len 7
+rep 763 val 54 len 7
+rep 764 val 55 len 7
+rep 765 val 56 len 7
+rep 766 val 57 len 7
+rep 767 val 58 len 7
+rep 768 val 59 len 7
+rep 769 val 60 len 7
+rep 770 val 61 len 7
+rep 771 val 62 len 7
+rep 772 val 63 len 7
+rep 773 val 64 len 7
+rep 774 val 65 len 7
+rep 775 val 66 len 7
+rep 776 val 67 len 7
+rep 777 val 68 len 7
+rep 778 val 69 len 7
+rep 779 val 70 len 7
+rep 780 val 71 len 7
+rep 781 val 72 len 7
+rep 782 val 73 len 7
+rep 783 val 74 len 7
+rep 784 val 75 len 7
+rep 785 val 76 len 7
+rep 786 val 77 len 7
+rep 787 val 78 len 7
+rep 788 val 79 len 7
+rep 789 val 80 len 7
+rep 790 val 81 len 7
+rep 791 val 82 len 7
+rep 792 val 83 len 7
+rep 793 val 84 len 7
+rep 794 val 85 len 7
+rep 795 val 86 len 7
+rep 796 val 87 len 7
+rep 797 val 88 len 7
+rep 798 val 89 len 7
+rep 799 val 90 len 7
+rep 800 val 91 len 7
+rep 801 val 92 len 7
+rep 802 val 93 len 7
+rep 803 val 94 len 7
+rep 804 val 95 len 7
+rep 805 val 96 len 7
+rep 806 val 97 len 7
+rep 807 val 98 len 7
+rep 808 val 99 len 7
+rep 809 val 100 len 7
+rep 810 val 101 len 7
+rep 811 val 102 len 7
+rep 812 val 103 len 7
+rep 813 val 104 len 7
+rep 814 val 105 len 7
+rep 815 val 106 len 7
+rep 816 val 107 len 7
+rep 817 val 108 len 7
+rep 818 val 109 len 7
+rep 819 val 110 len 7
+rep 820 val 111 len 7
+rep 821 val 112 len 7
+rep 822 val 113 len 7
+rep 823 val 114 len 7
+rep 824 val 115 len 7
+rep 825 val 116 len 7
+rep 826 val 117 len 7
+rep 827 val 118 len 7
+rep 828 val 119 len 7
+rep 829 val 120 len 7
+rep 830 val 121 len 7
+rep 831 val 122 len 7
+rep 832 val 123 len 7
+rep 833 val 124 len 7
+rep 834 val 125 len 7
+rep 835 val 126 len 7
+rep 836 val 127 len 7
+rep 78 val 128 len 5
+rep 79 val 129 len 5
+rep 80 val 130 len 5
+rep 81 val 131 len 5
+rep 82 val 132 len 5
+rep 83 val 133 len 5
+rep 84 val 134 len 5
+rep 85 val 135 len 5
+rep 86 val 136 len 5
+rep 87 val 137 len 5
+rep 88 val 138 len 5
+rep 89 val 139 len 5
+rep 90 val 140 len 5
+rep 91 val 141 len 5
+rep 92 val 142 len 5
+rep 93 val 143 len 5
+rep 94 val 144 len 5
+rep 95 val 145 len 5
+rep 96 val 146 len 5
+rep 97 val 147 len 5
+rep 98 val 148 len 5
+rep 99 val 149 len 5
+rep 100 val 150 len 5
+rep 101 val 151 len 5
+rep 102 val 152 len 5
+rep 103 val 153 len 5
+rep 104 val 154 len 5
+rep 105 val 155 len 5
+rep 106 val 156 len 5
+rep 107 val 157 len 5
+rep 108 val 158 len 5
+rep 109 val 159 len 5
+rep 110 val 160 len 5
+rep 111 val 161 len 5
+rep 112 val 162 len 5
+rep 113 val 163 len 5
+rep 114 val 164 len 5
+rep 115 val 165 len 5
+rep 116 val 166 len 5
+rep 117 val 167 len 5
+rep 118 val 168 len 5
+rep 119 val 169 len 5
+rep 120 val 170 len 5
+rep 121 val 171 len 5
+rep 122 val 172 len 5
+rep 123 val 173 len 5
+rep 124 val 174 len 5
+rep 125 val 175 len 5
+rep 126 val 176 len 5
+rep 127 val 177 len 5
+rep 128 val 178 len 5
+rep 129 val 179 len 5
+rep 130 val 180 len 5
+rep 131 val 181 len 5
+rep 132 val 182 len 5
+rep 133 val 183 len 5
+rep 134 val 184 len 5
+rep 135 val 185 len 5
+rep 136 val 186 len 5
+rep 137 val 187 len 5
+rep 138 val 188 len 5
+rep 139 val 189 len 5
+rep 140 val 190 len 5
+rep 141 val 191 len 5
+rep 142 val 192 len 5
+rep 143 val 193 len 5
+rep 144 val 194 len 5
+rep 145 val 195 len 5
+rep 146 val 196 len 5
+rep 147 val 197 len 5
+rep 148 val 198 len 5
+rep 149 val 199 len 5
+rep 150 val 200 len 5
+rep 151 val 201 len 5
+rep 152 val 202 len 5
+rep 153 val 203 len 5
+rep 154 val 204 len 5
+rep 155 val 205 len 5
+rep 156 val 206 len 5
+rep 837 val 207 len 7
+rep 838 val 208 len 7
+rep 839 val 209 len 7
+rep 840 val 210 len 7
+rep 841 val 211 len 7
+rep 842 val 212 len 7
+rep 843 val 213 len 7
+rep 844 val 214 len 7
+rep 845 val 215 len 7
+rep 846 val 216 len 7
+rep 847 val 217 len 7
+rep 848 val 218 len 7
+rep 849 val 219 len 7
+rep 850 val 220 len 7
+rep 851 val 221 len 7
+rep 852 val 222 len 7
+rep 853 val 223 len 7
+rep 157 val 224 len 5
+rep 158 val 225 len 5
+rep 159 val 226 len 5
+rep 160 val 227 len 5
+rep 161 val 228 len 5
+rep 162 val 229 len 5
+rep 163 val 230 len 5
+rep 164 val 231 len 5
+rep 165 val 232 len 5
+rep 166 val 233 len 5
+rep 167 val 234 len 5
+rep 168 val 235 len 5
+rep 169 val 236 len 5
+rep 170 val 237 len 5
+rep 171 val 238 len 5
+rep 172 val 239 len 5
+rep 173 val 240 len 5
+rep 174 val 243 len 5
+rep 175 val 244 len 5
+rep 176 val 245 len 5
+rep 177 val 246 len 5
+rep 178 val 247 len 5
+rep 32 val 248 len 4
+rep 33 val 249 len 4
+rep 34 val 250 len 4
+rep 35 val 251 len 4
+rep 36 val 252 len 4
+rep 179 val 254 len 5
+rep 37 val 255 len 4
+rep 854 val 256 len 7
+rep 38 val 257 len 4
+rep 7 val 258 len 2
+rep 855 val 261 len 7
+0000000	 = 59	(len 7)
+0000001	 = 60	(len 7)
+0000010	 = 61	(len 7)
+0000011	 = 62	(len 7)
+0000100	 = 63	(len 7)
+0000101	 = 64	(len 7)
+0000110	 = 65	(len 7)
+0000111	 = 66	(len 7)
+0001000	 = 67	(len 7)
+0001001	 = 68	(len 7)
+0001010	 = 69	(len 7)
+0001011	 = 70	(len 7)
+0001100	 = 71	(len 7)
+0001101	 = 72	(len 7)
+0001110	 = 73	(len 7)
+0001111	 = 74	(len 7)
+0010000	 = 75	(len 7)
+0010001	 = 76	(len 7)
+0010010	 = 77	(len 7)
+0010011	 = 78	(len 7)
+0010100	 = 79	(len 7)
+0010101	 = 80	(len 7)
+0010110	 = 81	(len 7)
+0010111	 = 82	(len 7)
+0011000	 = 83	(len 7)
+0011001	 = 84	(len 7)
+0011010	 = 85	(len 7)
+0011011	 = 86	(len 7)
+0011100	 = 87	(len 7)
+0011101	 = 88	(len 7)
+0011110	 = 89	(len 7)
+0011111	 = 90	(len 7)
+0100000	 = 91	(len 7)
+0100001	 = 92	(len 7)
+0100010	 = 93	(len 7)
+0100011	 = 94	(len 7)
+0100100	 = 95	(len 7)
+0100101	 = 96	(len 7)
+0100110	 = 97	(len 7)
+0100111	 = 98	(len 7)
+0101000	 = 99	(len 7)
+0101001	 = 100	(len 7)
+0101010	 = 101	(len 7)
+0101011	 = 102	(len 7)
+0101100	 = 103	(len 7)
+0101101	 = 104	(len 7)
+0101110	 = 105	(len 7)
+0101111	 = 106	(len 7)
+0110000	 = 107	(len 7)
+0110001	 = 108	(len 7)
+0110010	 = 109	(len 7)
+0110011	 = 110	(len 7)
+0110100	 = 111	(len 7)
+0110101	 = 112	(len 7)
+0110110	 = 113	(len 7)
+0110111	 = 114	(len 7)
+0111000	 = 115	(len 7)
+0111001	 = 116	(len 7)
+0111010	 = 117	(len 7)
+0111011	 = 118	(len 7)
+0111100	 = 119	(len 7)
+0111101	 = 120	(len 7)
+0111110	 = 121	(len 7)
+0111111	 = 122	(len 7)
+1000000	 = 123	(len 7)
+1000001	 = 124	(len 7)
+1000010	 = 125	(len 7)
+1000011	 = 126	(len 7)
+1000100	 = 127	(len 7)
+1000101	 = 207	(len 7)
+1000110	 = 208	(len 7)
+1000111	 = 209	(len 7)
+1001000	 = 210	(len 7)
+1001001	 = 211	(len 7)
+1001010	 = 212	(len 7)
+1001011	 = 213	(len 7)
+1001100	 = 214	(len 7)
+1001101	 = 215	(len 7)
+1001110	 = 216	(len 7)
+1001111	 = 217	(len 7)
+1010000	 = 218	(len 7)
+1010001	 = 219	(len 7)
+1010010	 = 220	(len 7)
+1010011	 = 221	(len 7)
+1010100	 = 222	(len 7)
+1010101	 = 223	(len 7)
+1010110	 = 256	(len 7)
+1010111	 = 261	(len 7)
+1011000	 = 17	(len 7)
+1011001	 = 18	(len 7)
+1011010	 = 19	(len 7)
+1011011	 = 20	(len 7)
+1011100	 = 21	(len 7)
+1011101	 = 22	(len 7)
+1011110	 = 23	(len 7)
+1011111	 = 24	(len 7)
+1100000	 = 25	(len 7)
+1100001	 = 26	(len 7)
+1100010	 = 27	(len 7)
+1100011	 = 28	(len 7)
+1100100	 = 29	(len 7)
+1100101	 = 30	(len 7)
+1100110	 = 31	(len 7)
+1100111	 = 32	(len 7)
+1101000	 = 33	(len 7)
+1101001	 = 34	(len 7)
+1101010	 = 35	(len 7)
+1101011	 = 36	(len 7)
+1101100	 = 37	(len 7)
+1101101	 = 38	(len 7)
+1101110	 = 39	(len 7)
+1101111	 = 40	(len 7)
+1110000	 = 41	(len 7)
+1110001	 = 42	(len 7)
+1110010	 = 43	(len 7)
+1110011	 = 44	(len 7)
+1110100	 = 45	(len 7)
+1110101	 = 46	(len 7)
+1110110	 = 47	(len 7)
+1110111	 = 48	(len 7)
+1111000	 = 51	(len 7)
+1111001	 = 52	(len 7)
+1111010	 = 53	(len 7)
+1111011	 = 54	(len 7)
+1111100	 = 55	(len 7)
+1111101	 = 56	(len 7)
+1111110	 = 57	(len 7)
+1111111	 = 58	(len 7)
+cl_list[0] : 4
+cl_list[1] : 4
+cl_list[2] : 4
+cl_list[3] : 4
+cl_list[4] : 1
+cl_list[5] : 0
+cl_list[6] : 0
+cl_list[7] : 2
+cl_list[8] : 2
+cl_list[9] : 2
+cl_list[10] : 2
+cl_list[11] : 3
+cl_list[12] : 4
+2 1 4 1 5 
+
+0 0 2 12 26 
+tree_size 20
+rep 26 val 0 len 4
+rep 27 val 1 len 4
+rep 28 val 2 len 4
+rep 29 val 3 len 4
+rep 0 val 4 len 1
+rep 2 val 7 len 2
+rep 3 val 8 len 2
+rep 4 val 9 len 2
+rep 5 val 10 len 2
+rep 12 val 11 len 3
+rep 30 val 12 len 4
+00	 = 9	(len 2)
+01	 = 10	(len 2)
+100	 = 11	(len 3)
+1010	 = 0	(len 4)
+1011	 = 1	(len 4)
+1100	 = 2	(len 4)
+1101	 = 3	(len 4)
+1110	 = 12	(len 4)
+val : 80
+val : 101
+val : 45
+val : 18
+val : 79
+val : 125
+val : 113
+val : 116
+val : 30
+val : 111
+val : 214
+val : 221
+val : 62
+val : 217
+val : 212
+val : 81
+val : 117
+val : 211
+val : 63
+val : 119
+val : 92
+val : 86
+val : 63
+val : 57
+val : 45
+val : 214
+val : 213
+val : 31
+val : 26
+val : 64
+val : 216
+val : 220
+val : 100
+val : 74
+val : 104
+val : 69
+val : 38
+val : 85
+val : 52
+val : 54
+val : 80
+val : 212
+val : 107
+val : 29
+val : 18
+val : 34
+val : 116
+val : 212
+val : 92
+val : 216
+val : 34
+val : 122
+val : 17
+val : 84
+val : 97
+val : 66
+val : 58
+val : 122
+val : 59
+val : 209
+val : 65
+val : 96
+val : 45
+val : 64
+val : 56
+val : 64
+val : 68
+val : 83
+val : 59
+val : 59
+val : 59
+val : 59
+val : 95
+val : 222
+val : 98
+val : 76
+val : 68
+val : 35
+val : 125
+val : 62
+val : 75
+val : 91
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 63
+val : 126
+val : 91
+val : 43
+val : 127
+val : 114
+val : 55
+val : 59
+val : 59
+val : 60
+val : 124
+val : 218
+val : 116
+val : 93
+val : 86
+val : 57
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 88
+val : 59
+val : 116
+val : 73
+val : 209
+val : 58
+val : 58
+val : 59
+val : 59
+val : 71
+val : 207
+val : 32
+val : 51
+val : 118
+val : 58
+val : 58
+val : 123
+val : 59
+val : 63
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 85
+val : 112
+val : 62
+val : 212
+val : 76
+val : 24
+val : 41
+val : 59
+val : 60
+val : 69
+val : 122
+val : 91
+val : 67
+val : 58
+val : 58
+val : 57
+val : 41
+val : 59
+val : 58
+val : 58
+val : 25
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 84
+val : 69
+val : 108
+val : 33
+val : 58
+val : 58
+val : 41
+val : 59
+val : 59
+val : 73
+val : 208
+val : 24
+val : 29
+val : 122
+val : 58
+val : 51
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 60
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 65
+val : 104
+val : 91
+val : 43
+val : 127
+val : 114
+val : 55
+val : 59
+val : 59
+val : 93
+val : 217
+val : 33
+val : 61
+val : 90
+val : 58
+val : 58
+val : 21
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 207
+val : 90
+val : 218
+val : 63
+val : 122
+val : 58
+val : 58
+val : 115
+val : 59
+val : 91
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 60
+val : 69
+val : 122
+val : 91
+val : 67
+val : 58
+val : 58
+val : 57
+val : 41
+val : 59
+val : 91
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 67
+val : 60
+val : 119
+val : 59
+val : 59
+val : 59
+val : 59
+val : 84
+val : 103
+val : 69
+val : 99
+val : 58
+val : 58
+val : 51
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 17
+val : 88
+val : 84
+val : 94
+val : 58
+val : 58
+val : 25
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 59
+val : 63
+val : 59
+val : 75
+val : 59
+val : 59
+val : 59
+val : 59
+val : 62
+val : 216
+val : 64
+val : 79
+val : 122
+va
