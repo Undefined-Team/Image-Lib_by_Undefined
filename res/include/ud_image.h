@@ -57,7 +57,7 @@
 # define ud_prot_overflow(val)								val > 255 ? 255 : val
 
 // Enum
-typedef enum				{UD_CS_RGB, UD_CS_YCBCR} ud_img_color_space;
+typedef enum				{UD_CS_RGB, UD_CS_RGBA, UD_CS_GREYSCALE, UD_CS_GREYSCALEA, UD_CS_YCBCR} ud_img_color_space;
 typedef enum				{UD_IT_JPG, UD_IT_PNG, UD_IT_BM, UD_IT_SVG} ud_image_type;
 
 // JPG Enum
@@ -68,6 +68,7 @@ typedef enum				{UD_HC_DC, UD_HC_AC} ud_huff_class;
 //typedef enum				{UD_CHUNK_IHDR, UD_CHUNK_PLTE, UD_CHUNK_IDAT, UD_CHUNK_IEND, UD_CHUNK_tRNS, UD_CHUNK_cHRM, UD_CHUNK_gAMA, UD_CHUNK_iCCP, UD_CHUNK_sBIT, UD_CHUNK_sRGB, UD_CHUNK_tEXt, UD_CHUNK_zTXt, UD_CHUNK_iTXt, UD_CHUNK_bKGD, UD_CHUNK_hIST, UD_CHUNK_pHYs, UD_CHUNK_sPLT, UD_CHUNK_tIME, UD_CHUNK_UNKN} ud_chunk_id;
 typedef enum				{UD_PNG_GREYSCALE, UD_PNG_RGB, UD_PNG_PALETTE, UD_PNG_GREYSCALE_A, UD_PNG_RGB_A} ud_png_color_type;
 typedef enum				{UD_PNG_RAW, UD_PNG_STATICHUFF, UD_PNG_SUPPHUFF, UD_PNG_RESERVED} ud_png_encoding;
+typedef enum				{UD_PNG_F_NONE, UD_PNG_F_SUB, UD_PNG_F_UP, UD_PNG_F_AVERAGE, UD_PNG_F_PAETH} ud_png_filter;
 // Structures
 
 typedef struct			uds_img_pix_rgb
@@ -76,6 +77,17 @@ typedef struct			uds_img_pix_rgb
 	unsigned char		green;
 	unsigned char		blue;
 }						ud_img_pix_rgb;
+
+typedef struct			uds_img_pix_greyscale
+{
+	unsigned char		greyscale;
+}						ud_img_pix_greyscale;
+
+typedef struct			uds_img_pix_greyscalea
+{
+	unsigned char		greyscale;
+	unsigned char		alpha;
+}						ud_img_pix_greyscalea;
 
 typedef struct			uds_img_png_spix
 {
@@ -215,6 +227,6 @@ ud_img	*ud_img_parse_image(char *s);
 ud_img	*ud_img_jpg_decryption(unsigned char *img);
 ud_img	*ud_img_png_decryption(unsigned char *img);
 void	ud_img_free_img(ud_img *img);
-void	mlx_print_jpg(ud_img *img); // temporary function
+void	mlx_print_img(ud_img *img); // temporary function
 
 #endif
