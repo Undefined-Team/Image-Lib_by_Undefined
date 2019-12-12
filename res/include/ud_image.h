@@ -219,6 +219,7 @@ typedef struct			uds_img
 	size_t				comp_nbr;
 	size_t				width;
 	size_t				height;
+	ud_img_pix_rgb		*background;
 }						ud_img;
 
 // Prototypes

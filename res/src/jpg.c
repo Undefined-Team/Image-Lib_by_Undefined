@@ -652,6 +652,7 @@ static ud_img		*ud_img_jpg_build_image(ud_jpg *jpg)
 			}
 		}
 	}
+	img->background = NULL;
 	ud_img_jpg_free_jpg(jpg);
 	return (img);
 }
