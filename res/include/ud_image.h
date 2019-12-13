@@ -205,10 +205,12 @@ typedef struct			uds_png
 	ud_img_pix_rgba		*palette;
 	ud_img_png_chroma	*chroma;
 	ud_img_png_spix		background;
+	int					bkgd_flag; //1 or 0
 	ud_img_png_spix		*transp_tab;
 	ud_png_huff			*litlen_tree;
 	ud_png_huff			*dist_tree;
 	unsigned char		*pix_stream;
+	size_t				chann_nbr;
 	size_t				stream_index;
 }						ud_png;
 

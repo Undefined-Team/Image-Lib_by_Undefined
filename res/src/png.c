@@ -300,7 +300,7 @@ ud_png_huff					*ud_img_png_cl_to_huffman_tree(unsigned char *cl_list, size_t le
 	//for (ud_ut_count i = 0; i < 8; ++i) printf("%hhu ", cl_count[i]);
 	cl_count[0] = 0;
 	next_code[0] = 0;
-	printf("\n0 ");
+	printf("\nnext code 0 ");
 	for (ud_ut_count i = 1; i <= max_code_length; ++i)
 	{
 		//if (cl_count[i - 1])
@@ -325,12 +325,22 @@ unsigned short				ud_img_png_read_huffman_tree(ud_png_huff *huff_tree, unsigned 
 	while (huff_tree->right_1 || huff_tree->left_0)
 	{
 		if (ud_img_png_read_bits(img_str_addr, bit_pos, 1) == 1)
+		{
+	//		printf("1");
 			huff_tree = huff_tree->right_1;
+		}
 		else
+		{
+	//		printf("0");
 			huff_tree = huff_tree->left_0;
+		}
 		if (!huff_tree)
-			printf(":((((((((\n");
+		{
+			printf("An unexpected error occured\n");
+			exit(EXIT_FAILURE);
+		}
 	}
+	//printf("\n");
 	return huff_tree->val;
 }
 
@@ -413,6 +423,11 @@ void					ud_img_png_inflate_huffman_coding(unsigned char **img_str_addr, unsigne
 			val -= 257;
 			len = ud_img_png_read_bits(img_str_addr, bit_pos, litlen_extra_bits[val]) + litlen_base[val];
 			dist_val = ud_img_png_read_huffman_tree(png->dist_tree, img_str_addr, bit_pos);
+			if (dist_val > 29)
+			{
+				printf("Unexpected distance value: %zu \"Distance codes 30-31 will never actually occur in the compressed data\"(RFC 1951)", dist_val);
+				exit(EXIT_FAILURE);
+			}
 			dist = ud_img_png_read_bits(img_str_addr, bit_pos, dist_extra_bits[dist_val]) + dist_base[dist_val];
 			for (ud_ut_count i = 0; i < len; ++i, ++png->stream_index)
 				png->pix_stream[png->stream_index] = png->pix_stream[png->stream_index - dist];
@@ -421,8 +436,8 @@ void					ud_img_png_inflate_huffman_coding(unsigned char **img_str_addr, unsigne
 			eob = 1;
 		else
 		{
-			printf("YA UN PB\n");
-			exit(-1);
+			printf("Unexpected literal/length value: %hu \"Literal/length values 286-287 will never actually occur in the compressed data\" (RFC 1951)\n", val);
+			exit(EXIT_FAILURE);
 		}
 	}
 }
@@ -465,25 +480,50 @@ static unsigned char	*ud_img_png_parse_data(unsigned int chunk_len, unsigned cha
 	int		fdict = ((*img_str >> 5) & 1); // dictionnary
 	int		flevel = ((*img_str++ >> 6) & 2); // compression level
 	printf("New block :\n\tcm: %x\n\tcinfo: %x\n\tfcheck: %x\n\tfdcit: %x\n\tflevel: %x\n", cm, cinfo, fcheck, fdict, flevel);
+	if (cm != 8)
+	{
+		printf("Invalid compression method (cm)\n");
+		exit(EXIT_FAILURE);
+		//return (img_str_cpy + chunk_len + 4);
+		
+	//	return 
+	}
 	do // read a block
 	{
 		last_block = ud_img_png_read_bits(&img_str, &bit_pos, 1);
-		//((*img_str >> bit_pos++) & 1);
 		int		comp_method = ud_img_png_read_bits(&img_str, &bit_pos, 2);
-		//((*img_str >> bit_pos) & 2);
-		
-		//bit_pos += 2;
 		printf("\tLast block ? %d Comp method: %s\n",last_block,tmp_print_comp_method(comp_method));
 		if (comp_method == UD_PNG_RAW)
 		{
+			/*if (bit_pos != 0)
+			{
+				++img_str;
+			}*/
+			bit_pos = 0;
+			unsigned short	len = ((*img_str) | (*(img_str + 1) << 8));
+			unsigned short	nlen = ((*(img_str + 2) << 8) | *(img_str + 3));
+			(void)nlen;
+			img_str += 4;
+			printf("%hhu %hhu len %hu\n", *(img_str - 4), *(img_str - 3), len);
+			for (ud_ut_count i = 0; i < len; ++i, ++(png->stream_index), ++img_str)
+			{
+				printf("%zu = %hhu\n", png->stream_index, *img_str);
+				png->pix_stream[png->stream_index] = *img_str;
+			}
 			//read raw 
-			printf("Raw data\n");
-			exit(0);
+			//printf("Raw data\n");
+			//exit(0);
 		}
 		else
 		{
 			if (comp_method == UD_PNG_SUPPHUFF) ud_img_png_parse_huffman_tree(&img_str, &bit_pos, &png->litlen_tree, &png->dist_tree);
 			else if (comp_method == UD_PNG_STATICHUFF) ud_img_png_build_static_huffman_tree(png);
+			else
+			{
+				printf("Reserved compression method: 11 \"11 - reserved (error)\" (RFC 1951)");
+		//		return (img_str_cpy + chunk_len + 4);
+				exit(EXIT_FAILURE);
+			}
 			//tmp_print_huff_tree(png->litlen_tree);
 			//tmp_print_huff_tree(png->dist_tree);
 				;//return (img_str_cpy + chunk_len + 4);
@@ -495,6 +535,7 @@ static unsigned char	*ud_img_png_parse_data(unsigned int chunk_len, unsigned cha
 		//while (chunk_len--)
 			//printf("%02.2hhx ", *img_str++);
 		}
+
 		//exit(1);
 	}
 	while (!last_block);
@@ -607,6 +648,7 @@ static unsigned char	*ud_img_png_parse_background(unsigned int chunk_len, unsign
 {
 	(void)chunk_len;
 	printf("bKGD (Background) Chunk:\n");
+	png->bkgd_flag = 1;
 	if (png->color_type == UD_PNG_PALETTE)
 	{
 		if (*img_str < png->palette_entries)
@@ -644,18 +686,21 @@ static unsigned char	*ud_img_png_parse_histogram(unsigned int chunk_len, unsigne
 		printf("Histogram chunk must be preceded by PLTE chunk\n");
 		exit(-1);
 	}
-	if (chunk_len * 2 != png->palette_entries)
+	else if (chunk_len * 2 != png->palette_entries)
 	{	
 		printf("Histogram size is not corresponding to palette entries number, file must be corrupted\n");
-		exit(-1);
+	//	exit(-1);
 	}
-	for (ud_ut_count i = 0; i < png->palette_entries; ++i)
+	else
 	{
-		unsigned short	freq = ud_img_png_parse_short_val(img_str);
-		img_str += 2;
-		printf("\t[%zu]\t => freq : %hu\n", i, freq);
+		for (ud_ut_count i = 0; i < png->palette_entries; ++i)
+		{
+			unsigned short	freq = ud_img_png_parse_short_val(img_str);
+			img_str += 2;
+			printf("\t[%zu]\t => freq : %hu\n", i, freq);
+		}
 	}
-	return (img_str + 4);
+	return (img_str + chunk_len + 4);
 }
 
 static unsigned char	*ud_img_png_parse_physical(unsigned int chunk_len, unsigned char *img_str, ud_png *png)
@@ -725,10 +770,11 @@ static ud_png	ud_img_png_init(void)
 {
 	ud_png	png;
 
-	png.background.red = 255;
-	png.background.green = 255;
-	png.background.blue = 255;
+	png.background.red = 222 * 256 + 1;
+	png.background.green = 222 * 256 + 1;
+	png.background.blue = 222 * 256 + 1;
 	png.palette = NULL;
+	png.bkgd_flag = 0;
 	png.chroma = NULL;
 	png.gamma = 1;
 	png.transp_tab = NULL;
@@ -740,13 +786,14 @@ static ud_png	ud_img_png_init(void)
 	return png;
 }
 
-int		ud_img_png_get_chann_nbr(ud_png_color_type color_type)
+size_t	ud_img_png_get_chann_nbr(ud_png_color_type color_type)
 {
-	if (color_type == UD_PNG_GREYSCALE) return 1;
 	if (color_type == UD_PNG_GREYSCALE_A) return 2;
 	if (color_type == UD_PNG_RGB_A) return 4;
-	return 3; // RGB // PALETTE
+	if (color_type == UD_PNG_RGB) return 3;
+	return 1; // GREYSCALE // PALETTE
 }
+
 
 int		ud_img_png_get_bit_depth_mask(unsigned char bit_depth)
 {
@@ -821,66 +868,100 @@ void			ud_img_png_update_bit_shift(int *bit_shift, int *index, unsigned char bit
 	}
 }
 
-unsigned char	ud_img_png_assign_pixel(unsigned char *pix_stream, int *index, int mask, int *bit_shift, unsigned char bit_depth)
+unsigned short	ud_img_png_assign_pixel(unsigned char *pix_stream, int *index, int mask, int *bit_shift, unsigned char bit_depth)
 {
 	if (bit_depth == 16)
 	{
-		return ((((pix_stream[*index] << 8) | pix_stream[*index + 1])) * 255 / ((1 << bit_depth) - 1));
+		return (((pix_stream[*index] << 8) | pix_stream[*index + 1]));// * 255 / ((1 << bit_depth) - 1));
 		//return ((((pix_stream[*index] << 8) | pix_stream[*index + 1])) / 256);
 	}
-	return (((pix_stream[*index] >> *bit_shift) & mask) * 255 / ((1 << bit_depth) - 1));
+	return ((pix_stream[*index] >> *bit_shift) & mask);// * 255 / ((1 << bit_depth) - 1));
 }
 
-void			ud_img_png_assign_rgb(void *pixel_addr, size_t pix_index, unsigned char *pix_stream, int *index, ud_img_pix_rgba *palette, unsigned char bit_depth, int mask, int *bit_shift)
+unsigned char	ud_img_png_convert_pixel(unsigned short value, unsigned char bit_depth)
+{
+	return (value * 255 / ((1 << bit_depth) - 1));
+}
+
+void			ud_img_png_assign_rgb(void *pixel_addr, size_t pix_index, unsigned char *pix_stream, int *index, ud_img_pix_rgba *palette, ud_img_png_spix *transp_tab, unsigned char bit_depth, int mask, int *bit_shift)
 {
 	ud_img_pix_rgb *pixel = (ud_img_pix_rgb*)pixel_addr;
 
 	(void)palette;
-	pixel[pix_index].red = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
+	(void)transp_tab;
+	pixel[pix_index].red = ud_img_png_convert_pixel(ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth), bit_depth);
 	ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
-	pixel[pix_index].green = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
+	pixel[pix_index].green = ud_img_png_convert_pixel(ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth), bit_depth);
 	ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
-	pixel[pix_index].blue = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
+	pixel[pix_index].blue = ud_img_png_convert_pixel(ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth), bit_depth);
 	ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
 }
 
-void			ud_img_png_assign_rgba(void *pixel_addr, size_t pix_index, unsigned char *pix_stream, int *index, ud_img_pix_rgba *palette, unsigned char bit_depth, int mask, int *bit_shift)
+void			ud_img_png_assign_rgba(void *pixel_addr, size_t pix_index, unsigned char *pix_stream, int *index, ud_img_pix_rgba *palette, ud_img_png_spix *transp_tab, unsigned char bit_depth, int mask, int *bit_shift)
 {
 	ud_img_pix_rgba *pixel = (ud_img_pix_rgba*)pixel_addr;
 
 	(void)palette;
-	pixel[pix_index].red = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
+	unsigned short	red = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
 	ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
-	pixel[pix_index].green = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
+	unsigned short	green = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
 	ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
-	pixel[pix_index].blue = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
+	unsigned short	blue = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
 	ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
-	pixel[pix_index].alpha = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
-	ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
+	if (!transp_tab)
+	{
+		pixel[pix_index].alpha = ud_img_png_convert_pixel(ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth), bit_depth);
+		ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
+	}
+	else
+	{
+		if (transp_tab->red == red && transp_tab->blue == blue && transp_tab->green == green)
+			pixel[pix_index].alpha = 0;
+		else
+			pixel[pix_index].alpha = 255;
+	}
+	pixel[pix_index].red = ud_img_png_convert_pixel(red, bit_depth);
+	pixel[pix_index].green = ud_img_png_convert_pixel(green, bit_depth);
+	pixel[pix_index].blue = ud_img_png_convert_pixel(blue, bit_depth);
 }
 
-void			ud_img_png_assign_greyscale(void *pixel_addr, size_t pix_index, unsigned char *pix_stream, int *index, ud_img_pix_rgba *palette, unsigned char bit_depth, int mask, int *bit_shift)
+void			ud_img_png_assign_greyscale(void *pixel_addr, size_t pix_index, unsigned char *pix_stream, int *index, ud_img_pix_rgba *palette, ud_img_png_spix *transp_tab, unsigned char bit_depth, int mask, int *bit_shift)
 {
 	ud_img_pix_greyscale *pixel = (ud_img_pix_greyscale*)pixel_addr;
 
 	(void)palette;
-	pixel[pix_index].greyscale = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
+	(void)transp_tab;
+	pixel[pix_index].greyscale = ud_img_png_convert_pixel(ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth), bit_depth);
 	ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
 }
 
-void			ud_img_png_assign_greyscalea(void *pixel_addr, size_t pix_index, unsigned char *pix_stream, int *index, ud_img_pix_rgba *palette, unsigned char bit_depth, int mask, int *bit_shift)
+void			ud_img_png_assign_greyscalea(void *pixel_addr, size_t pix_index, unsigned char *pix_stream, int *index, ud_img_pix_rgba *palette, ud_img_png_spix *transp_tab, unsigned char bit_depth, int mask, int *bit_shift)
 {
 	ud_img_pix_greyscalea *pixel = (ud_img_pix_greyscalea*)pixel_addr;
 
 	(void)palette;
-	pixel[pix_index].greyscale = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
+	unsigned short greyscale = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
 	ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
-	pixel[pix_index].alpha = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
-	ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
+	if (!transp_tab)
+	{
+		pixel[pix_index].alpha = ud_img_png_convert_pixel(ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth), bit_depth);
+		ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
+	}
+	else
+	{
+		if (transp_tab->red == greyscale)
+			pixel[pix_index].alpha = 0;
+		else
+			pixel[pix_index].alpha = 255;
+	}
+	pixel[pix_index].greyscale = ud_img_png_convert_pixel(greyscale, bit_depth);
 }
 
-void			ud_img_png_assign_palette(void *pixel_addr, size_t pix_index, unsigned char *pix_stream, int *index, ud_img_pix_rgba *palette, unsigned char bit_depth, int mask, int *bit_shift)
+void			ud_img_png_assign_palette(void *pixel_addr, size_t pix_index, unsigned char *pix_stream, int *index, ud_img_pix_rgba *palette, ud_img_png_spix *transp_tab, unsigned char bit_depth, int mask, int *bit_shift)
 {
+	(void)transp_tab;
+	//int	ind_s = *index;
+//	printf("% d \n", (int)bit_depth);
 	ud_img_pix_rgba *pixel = (ud_img_pix_rgba*)pixel_addr;
 	unsigned char	pal_index = ((pix_stream[*index] >> *bit_shift) & mask);
 	pixel[pix_index].red = palette[pal_index].red;
@@ -888,9 +969,11 @@ void			ud_img_png_assign_palette(void *pixel_addr, size_t pix_index, unsigned ch
 	pixel[pix_index].blue = palette[pal_index].blue;
 	pixel[pix_index].alpha = palette[pal_index].alpha;
 	ud_img_png_update_bit_shift(bit_shift, index, bit_depth);
+	//if (*index != ind_s)
+	//	printf("%02.2hhx ", pix_stream[*index]);
 }
 
-static void		(*ud_img_png_get_assign_function(ud_img_color_space color_space, ud_png_color_type png_color_type))(void *, size_t, unsigned char *, int *, ud_img_pix_rgba *, unsigned char, int, int *)
+static void		(*ud_img_png_get_assign_function(ud_img_color_space color_space, ud_png_color_type png_color_type))(void *, size_t, unsigned char *, int *, ud_img_pix_rgba *, ud_img_png_spix *, unsigned char, int, int *)
 {
 	if (png_color_type == UD_PNG_PALETTE) return &ud_img_png_assign_palette;
 	if (color_space == UD_CS_RGB) return &ud_img_png_assign_rgb;
@@ -964,17 +1047,18 @@ ud_img		*ud_img_png_build_image(ud_png *png)
 	img->height = png->img_height;
 	printf("bit_depth = %hhu\n", bit_depth);
 	int		mask = ud_img_png_get_bit_depth_mask(bit_depth);
-	void	(*assign_pix)(void *, size_t, unsigned char *, int *, ud_img_pix_rgba *, unsigned char, int, int *) = ud_img_png_get_assign_function(img->color_space, png->color_type);
+	void	(*assign_pix)(void *, size_t, unsigned char *, int *, ud_img_pix_rgba *, ud_img_png_spix *, unsigned char, int, int *) = ud_img_png_get_assign_function(img->color_space, png->color_type);
 	int		bit_shift = 8 - bit_depth;
 	int		filter_index;
-	size_t	scanline_size = png->color_type == UD_PNG_PALETTE ? img->width : img->comp_nbr * img->width * ((bit_depth + 7) / 8);
+	int		bit_depth_div = bit_depth == 16 ? 1 : 8 / bit_depth;
+	size_t	scanline_size = png->color_type == UD_PNG_PALETTE ? img->width / bit_depth_div : png->chann_nbr * img->width * ((bit_depth + 7) / 8) / bit_depth_div;
 	for (ud_ut_count row = 0; row < img->height; ++row)
 	{
 		printf("\nscanline[%03.3zu]: filter type: %03.3hhu stream : ", row, pix_stream[index]);
 		filter_index = index++;
 		filter_type = ud_img_png_get_filter_type(pix_stream[filter_index]);
 
-		printf("%hhx ", pix_stream[index]);
+		printf("%02.2hhx ", pix_stream[index]);
 		//printf("f_type = %d\n", filter_type);
 		for (ud_ut_count i = 0; i < scanline_size; ++i)
 			pix_stream[index + i] = ud_img_png_reverse_filtering(pix_stream, index + i, bit_depth, img, filter_type, filter_index);
@@ -987,7 +1071,7 @@ ud_img		*ud_img_png_build_image(ud_png *png)
 				exit(0);
 			}*/
 			//if (png->color_type != UD_PNG_PALETTE)
-			assign_pix(img->pixels->val, pix_index, pix_stream, &index, png->palette, bit_depth, mask, &bit_shift);
+			assign_pix(img->pixels->val, pix_index, pix_stream, &index, png->palette, png->transp_tab, bit_depth, mask, &bit_shift);
 			//else
 			//	ud_img_png_assign_palette(img->pixels->val, pix_index, pix_stream, &index, png->palette, bit_depth, mask, &bit_shift);
 			/*for (ud_ut_count i = 0; i < img->comp_nbr; ++i)
@@ -1007,9 +1091,10 @@ ud_img		*ud_img_png_build_image(ud_png *png)
 		//printf("\n");
 	}
 	ud_ut_prot_malloc(img->background = ud_ut_malloc(sizeof(ud_img_pix_rgb)));
-	img->background->red = (png->background.red * 255 / ((1 << 16) - 1));
-	img->background->green = (png->background.green * 255 / ((1 << 16) - 1));
-	img->background->blue = (png->background.blue * 255 / ((1 << 16) - 1));
+	unsigned char bkgd_bit_depth = png->color_type == UD_PNG_PALETTE && png->bkgd_flag ? 8 : 16;
+	img->background->red = (png->background.red * 255 / ((1 << bkgd_bit_depth) - 1));
+	img->background->green = (png->background.green * 255 / ((1 << bkgd_bit_depth) - 1));
+	img->background->blue = (png->background.blue * 255 / ((1 << bkgd_bit_depth) - 1));
 		//;ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
 	//img->background->green = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
 //	img->background->blue = ud_img_png_assign_pixel(pix_stream, index, mask, bit_shift, bit_depth);
@@ -1034,7 +1119,9 @@ ud_img	*ud_img_png_decryption(unsigned char *img_str)
 		if (chunk_f == ud_img_png_parse_data) check_data_chunk = 1;
 		else img_str = (*chunk_f)(chunk_len, img_str, &png);
 	}
-	ud_ut_prot_malloc(png.pix_stream = ud_ut_malloc(sizeof(unsigned char) * png.img_height * png.img_width * ((png.bit_depth + 7) / 8) * ud_img_png_get_chann_nbr(png.color_type) + png.img_height));
+	png.chann_nbr = ud_img_png_get_chann_nbr(png.color_type);
+	ud_ut_prot_malloc(png.pix_stream = ud_ut_malloc(sizeof(unsigned char) * png.img_height * png.img_width * ((png.bit_depth + 7) / 8) * png.chann_nbr + png.img_height + 15555555));
+	printf("%ld\n", png.img_height * png.img_width * ((png.bit_depth + 7) / 8) * png.chann_nbr + png.img_height);
 	while (chunk_f == ud_img_png_parse_data)
 	{
 		img_str = (*chunk_f)(chunk_len, img_str, &png);
